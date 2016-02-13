@@ -43,7 +43,7 @@ Code by: Faisal Al-Humaimidi
 
 5 - Notes
 
-### 1 A lesson in dealing with difficulties
+### 1 - A lesson in dealing with difficulties
 
 The world is a complex thing. It is impossible to deal with all of the complexities, but we can create pretty good approximations. This model of the global postal system is also just a simplification of reality, but with a grain of truth to it and based on my own experiences dealing with international mail.  
 Getting items from point A (the initiating end) to point B (the destination end) is not as easy as it seems. Your job is to write code which will simulate the motions of letters and packages through a period of time. Many things can go wrong. Packages can be rejected before they get sent. Letters may have to be returned to sender. The postal furnaces and smokestacks are always hungry for mail which happens to be in the wrong place at the wrong time. It is not fun to be a piece of mail and even less fun to be a postal system designer. This is where computing science comes into play.
