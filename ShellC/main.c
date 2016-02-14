@@ -7,6 +7,12 @@ int main(int argc, char* argv[]) {
     int loop_flag = 1; // break flag
     while (loop_flag == 1) {
         signal(SIGINT, signal_handler);
+        char printpath_cmd[1024];
+        if (getcwd(printpath_cmd, sizeof (printpath_cmd)) != NULL) {
+            printf("%s", getcwd(printpath_cmd, sizeof (printpath_cmd)));
+        } else {
+            perror("getcwd() of current directory error!!");
+        }
         printf("> ");
         inp = getchar(); //determine if to exec just '\n' or entire cmd
         if (flag == 1) {

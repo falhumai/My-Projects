@@ -9,11 +9,10 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
-
 struct tokinized_cmds {
-        char *name;
-        int size;
-        char *str[10];
+    char *name;
+    int size;
+    char *str[10];
 };
 
 void prompt_char();
@@ -24,7 +23,7 @@ char * find_dir(char **, char **);
 int get_path(char **);
 int exec_fin_file_cmd(char *, char **, char *);
 int exec_fout(char *, char **, char *);
-void perform_piped_cmd(char **, char  **, char *, char *);
+void perform_piped_cmd(char **, char **, char *, char *);
 
 static char inp = '\0';
 static int buf_chars = 0;
@@ -312,7 +311,13 @@ void signal_handler(int sig) {
             }
             printf("\n");
         }
-        printf("\n");
+        char printpath_cmd[1024];
+        if (getcwd(printpath_cmd, sizeof (printpath_cmd)) != NULL) {
+            printf("%s", getcwd(printpath_cmd, sizeof (printpath_cmd)));
+        } else {
+            perror("getcwd() of current directory error!!");
+        }
+        printf(">\n");
     }
 }
 
@@ -487,7 +492,51 @@ void perform_commands() {
                         strcat(check_dr_str, cmd.str[i]);
                     }
                 }
-                
+
+                if (chdir(check_dr_str) == -1) {
+                    printf("%s: No such directory in the current path\n", check_dr_str);
+                }
+            }
+        }
+    } else if (strcmp("clear", cmd.str[0]) == 0) {
+        printf("\033[2J\033[1;1H");
+    } else {
+        cmd.name = find_dir(cmd.str, current_path);
+
+        if (cmd.name == NULL) {
+            printf("Error command!!\n");
+        }
+
+        analyze_piped_cmds();
+    }
+}
+
+void perform_commands_with_input(struct tokinized_cmds cmd) {
+    if (strcmp("cd", cmd.str[0]) == 0) {
+        if (cmd.str[1] == NULL) { // if going back home
+            chdir(getenv("HOME"));
+        } else {
+            if (strcmp(cmd.str[1], "..") == 0) { // If going back to a previous folder
+                if (chdir(cmd.str[1]) == -1) {
+                    printf("%s: No such directory in the current path\n", cmd.str[1]);
+                }
+            } else if (cmd.size == 2) {
+                if (chdir(cmd.str[1]) == -1) {
+                    printf("%s: No such directory in the current path\n", cmd.str[1]);
+                }
+            } else { // if accessing folder within directories
+                char check_dr_str[1024];
+                strcpy(check_dr_str, "");
+                for (int i = 1; i < cmd.size; ++i) { // check for folders with spaces
+                    if (i < cmd.size - 1) {
+                        strcat(check_dr_str, cmd.str[i]);
+                        check_dr_str[strlen(check_dr_str) - 1] = '\0';
+                        strcat(check_dr_str, " ");
+                    } else {
+                        strcat(check_dr_str, cmd.str[i]);
+                    }
+                }
+
                 if (chdir(check_dr_str) == -1) {
                     printf("%s: No such directory in the current path\n", check_dr_str);
                 }
