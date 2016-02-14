@@ -19,14 +19,17 @@ int main(int argc, char* argv[]) {
             flag = 0;
         } else if (inp != '\n') {
             process_one_word_cmd(cmd_line, &inp);
-
-            if ((strcmp(cmd_line, "!!") == 0)) {
+            
+            if ((strcmp(cmd_line, "exit") == 0) || (strcmp(cmd_line, "quit") == 0)) {
+                exit(EXIT_SUCCESS);
+            } else if ((strcmp(cmd_line, "!!") == 0)) {
                 if (h.size > 0) {
-                    for (int i = 0; i < h.cmds[h.size - 1].size; ++i) {
-                        cmd.str[i] = h.cmds[h.size - 1].str[i];
+                    int i ;
+                    for (i = 0; i < h.cmds[0].size; ++i) {
+                        cmd.str[i] = h.cmds[0].str[i];
                     }
-                    cmd.size = h.cmds[h.size - 1].size;
-                    for (int i = 0; i < h.cmds[h.size - 1].size; ++i) {
+                    cmd.size = h.cmds[0].size;
+                    for (i = 0; i < h.cmds[0].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -36,11 +39,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!1") == 0)) {
                 if (0 < h.size) {
-                    for (int i = 0; i < h.cmds[0].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[0].size; ++i) {
                         cmd.str[i] = h.cmds[0].str[i];
                     }
                     cmd.size = h.cmds[0].size;
-                    for (int i = 0; i < h.cmds[0].size; ++i) {
+                    for (i = 0; i < h.cmds[0].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -50,11 +54,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!2") == 0)) {
                 if (1 < h.size) {
-                    for (int i = 0; i < h.cmds[1].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[1].size; ++i) {
                         cmd.str[i] = h.cmds[1].str[i];
                     }
                     cmd.size = h.cmds[1].size;
-                    for (int i = 0; i < h.cmds[1].size; ++i) {
+                    for (i = 0; i < h.cmds[1].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -64,11 +69,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!3") == 0)) {
                 if (2 < h.size) {
-                    for (int i = 0; i < h.cmds[2].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[2].size; ++i) {
                         cmd.str[i] = h.cmds[2].str[i];
                     }
                     cmd.size = h.cmds[2].size;
-                    for (int i = 0; i < h.cmds[2].size; ++i) {
+                    for (i = 0; i < h.cmds[2].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -78,11 +84,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!4") == 0)) {
                 if (3 < h.size) {
-                    for (int i = 0; i < h.cmds[3].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[3].size; ++i) {
                         cmd.str[i] = h.cmds[3].str[i];
                     }
                     cmd.size = h.cmds[3].size;
-                    for (int i = 0; i < h.cmds[3].size; ++i) {
+                    for (i = 0; i < h.cmds[3].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -92,11 +99,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!5") == 0)) {
                 if (4 < h.size) {
-                    for (int i = 0; i < h.cmds[4].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[4].size; ++i) {
                         cmd.str[i] = h.cmds[4].str[i];
                     }
                     cmd.size = h.cmds[4].size;
-                    for (int i = 0; i < h.cmds[4].size; ++i) {
+                    for (i = 0; i < h.cmds[4].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -106,11 +114,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!6") == 0)) {
                 if (4 < h.size) {
-                    for (int i = 0; i < h.cmds[5].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[5].size; ++i) {
                         cmd.str[i] = h.cmds[5].str[i];
                     }
                     cmd.size = h.cmds[5].size;
-                    for (int i = 0; i < h.cmds[5].size; ++i) {
+                    for (i = 0; i < h.cmds[5].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -120,11 +129,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!7") == 0)) {
                 if (6 < h.size) {
-                    for (int i = 0; i < h.cmds[6].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[6].size; ++i) {
                         cmd.str[i] = h.cmds[6].str[i];
                     }
                     cmd.size = h.cmds[6].size;
-                    for (int i = 0; i < h.cmds[6].size; ++i) {
+                    for (i = 0; i < h.cmds[6].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -134,11 +144,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!8") == 0)) {
                 if (7 < h.size) {
-                    for (int i = 0; i < h.cmds[7].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[7].size; ++i) {
                         cmd.str[i] = h.cmds[7].str[i];
                     }
                     cmd.size = h.cmds[7].size;
-                    for (int i = 0; i < h.cmds[7].size; ++i) {
+                    for (i = 0; i < h.cmds[7].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -148,11 +159,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!9") == 0)) {
                 if (8 < h.size) {
-                    for (int i = 0; i < h.cmds[8].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[8].size; ++i) {
                         cmd.str[i] = h.cmds[8].str[i];
                     }
                     cmd.size = h.cmds[8].size;
-                    for (int i = 0; i < h.cmds[8].size; ++i) {
+                    for (i = 0; i < h.cmds[8].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");
@@ -162,11 +174,12 @@ int main(int argc, char* argv[]) {
                 }
             } else if ((strcmp(cmd_line, "!10") == 0)) {
                 if (9 < h.size) {
-                    for (int i = 0; i < h.cmds[9].size; ++i) {
+                    int i;
+                    for (i = 0; i < h.cmds[9].size; ++i) {
                         cmd.str[i] = h.cmds[9].str[i];
                     }
                     cmd.size = h.cmds[9].size;
-                    for (int i = 0; i < h.cmds[9].size; ++i) {
+                    for (i = 0; i < h.cmds[9].size; ++i) {
                         printf("%s ", cmd.str[i]);
                     }
                     printf("\n");

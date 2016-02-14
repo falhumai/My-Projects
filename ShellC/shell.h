@@ -8,6 +8,24 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/types.h>
+#include <signal.h>
+
+char* saved_ptr1 = NULL;
+char* saved_ptr2 = NULL;
+char* saved_ptr3 = NULL;
+char* saved_ptr4 = NULL;
+char* saved_ptr5 = NULL;
+char* saved_ptr6 = NULL;
+char* saved_ptr7 = NULL;
+
+char static_char1[1024]; // to hold certain info from ptrs
+char static_char2[1024]; // to hold certain info from ptrs
+char static_char3[1024]; // to hold certain info from ptrs
+char static_char4[1024]; // to hold certain info from ptrs
+char static_char5[1024]; // to hold certain info from ptrs
+char static_char6[1024]; // to hold certain info from ptrs
+char static_char7[1024]; // to hold certain info from ptrs
+char buffer_sprintf[999999]; // to override asprintf (i.e. static memory for asprintf)
 
 struct tokinized_cmds {
     char *name;
@@ -42,6 +60,9 @@ char * find_dir(char **str_arr, char **look_up_dir) {
             } else {
                 *--str_arr[0];
                 asprintf(&res, "%s%s%s", path_name, "/", str_arr[0]);
+                strcpy(buffer_sprintf, res);
+                free(res);
+                res = buffer_sprintf;
             }
             return res;
         }
@@ -51,6 +72,9 @@ char * find_dir(char **str_arr, char **look_up_dir) {
                 perror("getcwd(): error\n");
             else {
                 asprintf(&res, "%s%s", path_name, str_arr[0]);
+                strcpy(buffer_sprintf, res);
+                free(res);
+                res = buffer_sprintf;
             }
             return res;
         }
@@ -60,6 +84,9 @@ char * find_dir(char **str_arr, char **look_up_dir) {
     for (i = 0; i < 64; ++i) {
         if (look_up_dir[i] != NULL) {
             asprintf(&res, "%s%s%s", look_up_dir[i], "/", str_arr[0]);
+            strcpy(buffer_sprintf, res);
+            free(res);
+            res = buffer_sprintf;
             if (access(res, X_OK) == 0) {
                 return res;
             }
@@ -74,18 +101,26 @@ int get_path(char* dirs[]) {
     int error = 0;
     char* current_env;
     char* pth;
+
     int i;
 
     for (i = 0; i < 513; i++)
         dirs[i] = NULL;
     current_env = (char*) getenv("PATH");
     pth = (char*) malloc(strlen(current_env) + 1);
-    strcpy(pth, current_env);
 
+    if (pth != NULL) {
+        strcpy(static_char7, pth);
+        free(pth);
+        pth = static_char7;
+    }
+
+    strcpy(pth, current_env);
+    saved_ptr7 = pth;
     char* pch;
     pch = strtok(pth, ":");
-
-    for (int j = 0; pch != NULL; ++j) {
+    int j;
+    for (j = 0; pch != NULL; ++j) {
         pch = strtok(NULL, ":");
         dirs[j] = pch;
     }
@@ -209,28 +244,30 @@ int exec_fin_file_cmd(char * passed_cmd_name, char * str_arr[], char * filename)
 int exec_fout(char * passed_cmd_nm, char * str_arr[], char * fin_name) {
     int define = dup(1);
 
-    int fin = open(fin_name, O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU | S_IRGRP | S_IROTH);
-    if (fin < 0) {
+    int fout = open(fin_name, O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU | S_IRGRP | S_IROTH);
+    if (fout < 0) {
         return 1;
     }
 
-    if (dup2(fin, 1) < 0) {
+    if (dup2(fout, 1) < 0) {
         return 1;
     }
 
     int pid_stat = fork();
     if (pid_stat == 0) {
-        close(fin);
+        close(fout);
         close(define);
         execve(passed_cmd_nm, str_arr, 0);
+        exit(EXIT_SUCCESS);
         return 0;
     }
-
+    
+    
     dup2(define, 1);
-    close(fin);
+    close(fout);
     close(define);
     wait(NULL);
-    close(fin);
+    close(fout);
     return 0;
 }
 
@@ -282,16 +319,17 @@ void insert_history() {
     if (h.size < 10) {
         ++h.size;
     }
-
-    for (int i = h.size - 1; i >= 1; --i) {
-        for (int j = 0; j < h.cmds[i - 1].size; ++j) {
+    int i;
+    for (i = h.size - 1; i >= 1; --i) {
+        int j;
+        for (j = 0; j < h.cmds[i - 1].size; ++j) {
             strcpy(h.cmds[i].str[j], h.cmds[i - 1].str[j]);
         }
         h.cmds[i].size = h.cmds[i - 1].size;
     }
 
 
-    for (int i = 0; i < cmd.size; ++i) {
+    for (i = 0; i < cmd.size; ++i) {
         strcpy(h.cmds[0].str[i], cmd.str[i]);
     }
 
@@ -304,9 +342,11 @@ void signal_handler(int sig) {
     if (sig == SIGINT) {
         flag = 1;
         printf("\n");
-        for (int i = 0; i < h.size; ++i) {
+        int i;
+        for (i = 0; i < h.size; ++i) {
             printf("%d: ", (i + 1));
-            for (int j = 0; j < h.cmds[i].size; ++j) {
+            int j;
+            for (j = 0; j < h.cmds[i].size; ++j) {
                 printf("%s ", h.cmds[i].str[j]);
             }
             printf("\n");
@@ -332,6 +372,7 @@ int exec_systeml_commands() {
     } else if (child_pid_stat == 0) {
         execve(cmd.name, cmd.str, 0); // execution of external commands
         printf("System command exited!!\n");
+        exit(EXIT_SUCCESS);
         return 1;
     } else if (child_pid_stat > 0) {
         do {
@@ -368,6 +409,13 @@ int analyze_pip_cmd(int pased_index) {
     str_A[i] = NULL;
     cmd_A = find_dir(str_A, current_path);
 
+    if (cmd_A != NULL) {
+        strcpy(static_char1, cmd_A);
+        cmd_A = static_char1;
+    }
+
+    saved_ptr1 = cmd_A;
+
     int j1;
     int j2 = 0;
     for (j1 = pased_index + 1; j1 < cmd.size; ++j1) {
@@ -377,6 +425,12 @@ int analyze_pip_cmd(int pased_index) {
     str_B[j2] = NULL;
     cmd_B = find_dir(str_B, current_path);
 
+    if (cmd_B != NULL) {
+        strcpy(static_char2, cmd_B);
+        cmd_B = static_char2;
+    }
+
+    saved_ptr2 = cmd_B;
 
     fflush(stdout);
 
@@ -407,7 +461,15 @@ int fout_cmd(int passed_in_index) {
 
     str[j] = NULL;
     cmd_name = find_dir(str, current_path);
-    return exec_fout(cmd_name, str, cmd.str[passed_in_index + 1]);
+
+    if (cmd_name != NULL) {
+        strcpy(static_char3, cmd_name);
+        cmd_name = static_char3;
+    }
+
+    saved_ptr3 = cmd_name;
+    int res = exec_fout(cmd_name, str, cmd.str[passed_in_index + 1]);
+    return res;
 }
 
 int fin_cmd(int i) {
@@ -423,6 +485,12 @@ int fin_cmd(int i) {
     str[j] = NULL;
     cmd_name = find_dir(str, current_path);
 
+    if (cmd_name != NULL) {
+        strcpy(static_char4, cmd_name);
+        cmd_name = static_char4;
+    }
+
+    saved_ptr4 = cmd_name;
 
     fflush(stdout);
 
@@ -483,7 +551,8 @@ void perform_commands() {
             } else { // if accessing folder within directories
                 char check_dr_str[1024];
                 strcpy(check_dr_str, "");
-                for (int i = 1; i < cmd.size; ++i) { // check for folders with spaces
+                int i;
+                for (i = 1; i < cmd.size; ++i) { // check for folders with spaces
                     if (i < cmd.size - 1) {
                         strcat(check_dr_str, cmd.str[i]);
                         check_dr_str[strlen(check_dr_str) - 1] = '\0';
@@ -503,6 +572,12 @@ void perform_commands() {
     } else {
         cmd.name = find_dir(cmd.str, current_path);
 
+        if (cmd.name != NULL) {
+            strcpy(static_char5, cmd.name);
+            cmd.name = static_char5;
+        }
+
+        saved_ptr5 = cmd.name;
         if (cmd.name == NULL) {
             printf("Error command!!\n");
         }
@@ -527,7 +602,8 @@ void perform_commands_with_input(struct tokinized_cmds cmd) {
             } else { // if accessing folder within directories
                 char check_dr_str[1024];
                 strcpy(check_dr_str, "");
-                for (int i = 1; i < cmd.size; ++i) { // check for folders with spaces
+                int i;
+                for (i = 1; i < cmd.size; ++i) { // check for folders with spaces
                     if (i < cmd.size - 1) {
                         strcat(check_dr_str, cmd.str[i]);
                         check_dr_str[strlen(check_dr_str) - 1] = '\0';
@@ -547,11 +623,215 @@ void perform_commands_with_input(struct tokinized_cmds cmd) {
     } else {
         cmd.name = find_dir(cmd.str, current_path);
 
+        if (cmd.name != NULL) {
+            strcpy(static_char6, cmd.name);
+            cmd.name = static_char6;
+        }
+
+        saved_ptr6 = cmd.name;
         if (cmd.name == NULL) {
             printf("Error command!!\n");
         }
 
         analyze_piped_cmds();
+    }
+}
+
+void mini_garbage_collector() {
+    if (saved_ptr1 != NULL) {
+        if (saved_ptr1 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr1);
+        saved_ptr1 = NULL;
+    }
+
+    if (saved_ptr2 != NULL) {
+        if (saved_ptr2 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr2);
+        saved_ptr2 = NULL;
+    }
+
+    if (saved_ptr3 != NULL) {
+        if (saved_ptr3 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr3);
+        saved_ptr3 = NULL;
+    }
+
+    if (saved_ptr4 != NULL) {
+        if (saved_ptr4 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr4);
+        saved_ptr4 = NULL;
+    }
+
+    if (saved_ptr5 != NULL) {
+        if (saved_ptr5 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr5);
+        saved_ptr5 = NULL;
+    }
+
+    if (saved_ptr6 != NULL) {
+        if (saved_ptr6 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr6);
+        saved_ptr6 = NULL;
+    }
+
+    if (saved_ptr7 != NULL) {
+        if (saved_ptr7 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+        free(saved_ptr7);
+        saved_ptr7 = NULL;
     }
 }
 
