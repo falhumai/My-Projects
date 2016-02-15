@@ -36,6 +36,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -57,6 +58,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -78,6 +80,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -99,6 +102,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -120,6 +124,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -141,6 +146,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -162,6 +168,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -183,6 +190,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -204,6 +212,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -225,6 +234,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -246,6 +256,7 @@ int main(int argc, char* argv[]) {
                     printf("\n");
 
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
                         is_background = true;
                     }
@@ -263,6 +274,7 @@ int main(int argc, char* argv[]) {
                 insert_history();
 
                 if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                    cmd.cmd_words[cmd.words_size - 1] = NULL;
                     cmd.words_size = cmd.words_size - 1;
                     is_background = true;
                 }
