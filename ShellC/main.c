@@ -6,28 +6,28 @@ int main(int argc, char* argv[]) {
     h.size = 0;
     int loop_flag = 1; // break flag
     while (loop_flag == 1) {
-        is_background = false;
-        signal(SIGINT, signal_handler);
-        char printpath_cmd[1024];
-        if (getcwd(printpath_cmd, sizeof (printpath_cmd)) != NULL) {
-            printf("%s", getcwd(printpath_cmd, sizeof (printpath_cmd)));
+        is_background = false; // process
+        signal(SIGINT, signal_handler); // signal call for history function 'signal handler' in shell.h
+        char printpath_cmd[1024]; // allocate buffer for getcwd(..)
+        if (getcwd(printpath_cmd, sizeof (printpath_cmd)) != NULL) { //obtain the path
+            printf("%s", getcwd(printpath_cmd, sizeof (printpath_cmd))); // display in shell
         } else {
             perror("getcwd() of current directory error!!");
         }
-        printf("> ");
+        printf("> "); // prompt
         inp = getchar(); //determine if to exec just '\n' or entire cmd
         if (flag == 1) {
             flag = 0;
         } else if (inp != '\n') {
-            process_one_word_cmd(cmd_line, &inp);
+            process_one_word_cmd(cmd_line, &inp); // //grabs characters until string is complete - shell.h
 
-            if ((strcmp(cmd_line, "exit") == 0) || (strcmp(cmd_line, "quit") == 0)) {
+            if ((strcmp(cmd_line, "exit") == 0) || (strcmp(cmd_line, "quit") == 0)) { // exit shell
                 exit(EXIT_SUCCESS);
-            } else if ((strcmp(cmd_line, "!!") == 0)) {
-                if (h.size > 0) {
+            } else if ((strcmp(cmd_line, "!!") == 0)) { // !! will re-run the last command, not added to history
+                if (h.size > 0) { 
                     int i;
-                    for (i = 0; i < h.cmds[0].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[0].str[i];
+                    for (i = 0; i < h.cmds[0].size; ++i) { // structure history
+                        cmd.cmd_words[i] = h.cmds[0].str[i]; // cmd is a member of tokenized commands, shell.h, cmds exists in a history structure
                     }
                     cmd.words_size = h.cmds[0].size;
                     for (i = 0; i < h.cmds[0].size; ++i) {
@@ -38,18 +38,18 @@ int main(int argc, char* argv[]) {
                     if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
                         cmd.cmd_words[cmd.words_size - 1] = NULL;
                         cmd.words_size = cmd.words_size - 1;
-                        is_background = true;
+                        is_background = true; // this indicates a background process 
                     }
 
                     perform_commands();
                 } else {
                     printf("No commands in history!!\n");
                 }
-            } else if ((strcmp(cmd_line, "!1") == 0)) {
+            } else if ((strcmp(cmd_line, "!1") == 0)) { // will re-run the !nth command in history
                 if (0 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[0].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[0].str[i];
+                    for (i = 0; i < h.cmds[0].size; ++i) { //access history members
+                        cmd.cmd_words[i] = h.cmds[0].str[i]; 
                     }
                     cmd.words_size = h.cmds[0].size;
                     for (i = 0; i < h.cmds[0].size; ++i) {
@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "exit") == 0) || (strcmp(cmd_line, "quit") == 0)) {
                 loop_flag = 0;
             } else {
-                tokenize_cmd(cmd_line, &cmd);
+                tokenize_cmd(cmd_line, &cmd); // history will tokenize all previous entries
                 insert_history();
 
                 if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
