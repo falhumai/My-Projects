@@ -7,9 +7,11 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdbool.h>
 #include <sys/types.h>
 #include <signal.h>
 
+// Will be used if we decided to use dynamic memory
 char* saved_ptr1 = NULL;
 char* saved_ptr2 = NULL;
 char* saved_ptr3 = NULL;
@@ -18,20 +20,24 @@ char* saved_ptr5 = NULL;
 char* saved_ptr6 = NULL;
 char* saved_ptr7 = NULL;
 
-char static_char1[1024]; // to hold certain info from ptrs
-char static_char2[1024]; // to hold certain info from ptrs
-char static_char3[1024]; // to hold certain info from ptrs
-char static_char4[1024]; // to hold certain info from ptrs
-char static_char5[1024]; // to hold certain info from ptrs
-char static_char6[1024]; // to hold certain info from ptrs
-char static_char7[1024]; // to hold certain info from ptrs
-char buffer_sprintf[999999]; // to override asprintf (i.e. static memory for asprintf)
+char static_char1[9999999]; // to hold certain info from ptrs
+char static_char2[9999999]; // to hold certain info from ptrs
+char static_char3[9999999]; // to hold certain info from ptrs
+char static_char4[9999999]; // to hold certain info from ptrs
+char static_char5[9999999]; // to hold certain info from ptrs
+char static_char6[9999999]; // to hold certain info from ptrs
+char static_char7[9999999]; // to hold certain info from ptrs
+char buffer_sprintf[9999999]; // to override asprintf (i.e. static memory for asprintf)
 
 struct tokinized_cmds {
-    char *name;
-    int size;
-    char *str[10];
+    char *cmd_words[10];
+    char *cmd_name;
+    int words_size;
 };
+
+
+bool is_background; // will be used for if there is & at the end of the command
+
 
 void prompt_char();
 void intro();
@@ -61,7 +67,9 @@ char * find_dir(char **str_arr, char **look_up_dir) {
                 *--str_arr[0];
                 asprintf(&res, "%s%s%s", path_name, "/", str_arr[0]);
                 strcpy(buffer_sprintf, res);
-                free(res);
+                if (res != NULL) {
+                    free(res);
+                }
                 res = buffer_sprintf;
             }
             return res;
@@ -73,7 +81,9 @@ char * find_dir(char **str_arr, char **look_up_dir) {
             else {
                 asprintf(&res, "%s%s", path_name, str_arr[0]);
                 strcpy(buffer_sprintf, res);
-                free(res);
+                if (res != NULL) {
+                    free(res);
+                }
                 res = buffer_sprintf;
             }
             return res;
@@ -85,7 +95,9 @@ char * find_dir(char **str_arr, char **look_up_dir) {
         if (look_up_dir[i] != NULL) {
             asprintf(&res, "%s%s%s", look_up_dir[i], "/", str_arr[0]);
             strcpy(buffer_sprintf, res);
-            free(res);
+            if (res != NULL) {
+                free(res);
+            }
             res = buffer_sprintf;
             if (access(res, X_OK) == 0) {
                 return res;
@@ -128,7 +140,7 @@ int get_path(char* dirs[]) {
 
     if (error == 1) {
         printf("Directories in PATH variable\n");
-        for (i = 0; i < 64; ++i)
+        for (i = 0; i < 64; i++)
             if (dirs[i] != '\0') {
                 printf("Directory[%d]: %s\n", i, dirs[i]);
             }
@@ -142,25 +154,25 @@ int tokenize_cmd(char * cmd_ln, struct tokinized_cmds * command) {
     pch = strtok(cmd_ln, " ");
     int i = 0;
     while (pch != NULL) {
-        command->str[i] = pch;
+        command->cmd_words[i] = pch;
         pch = strtok(NULL, " ");
         i++;
     }
-    command->size = i;
-    command->str[i++] = NULL;
+    command->words_size = i;
+    command->cmd_words[i++] = NULL;
 
     if (err == 1) {
         printf("Stub: parseCommand(char, struct);\n");
-        printf("Array size: %i\n", sizeof (*command->str));
+        printf("Array size: %i\n", sizeof (*command->cmd_words));
         int j;
         for (j = 0; j < i; j++) {
-            printf("command->argv[%i] = %s\n", j, command->str[j]);
+            printf("command->argv[%i] = %s\n", j, command->cmd_words[j]);
         }
-        printf("\ncommand->argc = %i\n", command->size);
+        printf("\ncommand->argc = %i\n", command->words_size);
 
-        if (command->str[0] != NULL) {
+        if (command->cmd_words[0] != NULL) {
             char **p;
-            for (p = &command->str[1]; *p != NULL; p++) {
+            for (p = &command->cmd_words[1]; *p != NULL; p++) {
                 printf("%s\n", *p);
             }
         }
@@ -220,8 +232,10 @@ int exec_fin_file_cmd(char * passed_cmd_name, char * str_arr[], char * filename)
         char my_str;
 
         p_fin = fopen(filename, "r");
-        if (p_fin == NULL) perror("Error opening file");
-        else {
+
+        if (p_fin == NULL) {
+            perror("Error opening file");
+        } else {
 
             while ((my_str = fgetc(p_fin)) != EOF) {
                 putchar(my_str);
@@ -261,12 +275,14 @@ int exec_fout(char * passed_cmd_nm, char * str_arr[], char * fin_name) {
         exit(EXIT_SUCCESS);
         return 0;
     }
-    
-    
+
+
     dup2(define, 1);
     close(fout);
     close(define);
-    wait(NULL);
+    if (is_background == false) {
+        wait(NULL);
+    }
     close(fout);
     return 0;
 }
@@ -329,11 +345,11 @@ void insert_history() {
     }
 
 
-    for (i = 0; i < cmd.size; ++i) {
-        strcpy(h.cmds[0].str[i], cmd.str[i]);
+    for (i = 0; i < cmd.words_size; ++i) {
+        strcpy(h.cmds[0].str[i], cmd.cmd_words[i]);
     }
 
-    h.cmds[0].size = cmd.size;
+    h.cmds[0].size = cmd.words_size;
 }
 
 volatile sig_atomic_t flag = 0;
@@ -357,7 +373,7 @@ void signal_handler(int sig) {
         } else {
             perror("getcwd() of current directory error!!");
         }
-        printf(">\n");
+        printf(">\n ");
     }
 }
 
@@ -370,28 +386,30 @@ int exec_systeml_commands() {
         fprintf(stderr, "Child forking failed: \n");
         return 1;
     } else if (child_pid_stat == 0) {
-        execve(cmd.name, cmd.str, 0); // execution of external commands
+        execve(cmd.cmd_name, cmd.cmd_words, 0); // execution of external commands
         printf("System command exited!!\n");
         exit(EXIT_SUCCESS);
         return 1;
     } else if (child_pid_stat > 0) {
-        do {
-            child_pid = waitpid(child_pid_stat, &stat, WUNTRACED | WCONTINUED);
-            if (child_pid == -1) {
-                perror("waitpid");
-                exit(EXIT_FAILURE);
-            }
+        if (is_background == false) {
+            do {
+                child_pid = waitpid(child_pid_stat, &stat, WUNTRACED | WCONTINUED);
+                if (child_pid == -1) {
+                    perror("waitpid");
+                    exit(EXIT_FAILURE);
+                }
 
-            if (WIFEXITED(stat)) {
-                return 0;
-            } else if (WIFSIGNALED(stat)) {
-                printf("Killed... Signal: %d\n", WTERMSIG(stat));
-            } else if (WIFSTOPPED(stat)) {
-                printf("Suspended... Signal: %d\n", WSTOPSIG(stat));
-            } else if (WIFCONTINUED(stat)) {
-                printf("Continued...\n");
-            }
-        } while (!WIFEXITED(stat) && !WIFSIGNALED(stat)); // The do while is to make sure that the after executing system commands, no line is returned to the shell prompt arrow
+                if (WIFEXITED(stat)) {
+                    return 0;
+                } else if (WIFSIGNALED(stat)) {
+                    printf("Killed... Signal: %d\n", WTERMSIG(stat));
+                } else if (WIFSTOPPED(stat)) {
+                    printf("Suspended... Signal: %d\n", WSTOPSIG(stat));
+                } else if (WIFCONTINUED(stat)) {
+                    printf("Continued...\n");
+                }
+            } while (!WIFEXITED(stat) && !WIFSIGNALED(stat)); // The do while is to make sure that the after executing system commands, no line is returned to the shell prompt arrow
+        }
         return 0;
     }
 }
@@ -404,7 +422,7 @@ int analyze_pip_cmd(int pased_index) {
 
     int i;
     for (i = 0; i < pased_index; i++) {
-        str_A[i] = cmd.str[i];
+        str_A[i] = cmd.cmd_words[i];
     }
     str_A[i] = NULL;
     cmd_A = find_dir(str_A, current_path);
@@ -418,8 +436,8 @@ int analyze_pip_cmd(int pased_index) {
 
     int j1;
     int j2 = 0;
-    for (j1 = pased_index + 1; j1 < cmd.size; ++j1) {
-        str_B[j2] = cmd.str[j1];
+    for (j1 = pased_index + 1; j1 < cmd.words_size; ++j1) {
+        str_B[j2] = cmd.cmd_words[j1];
         j2++;
     }
     str_B[j2] = NULL;
@@ -444,7 +462,9 @@ int analyze_pip_cmd(int pased_index) {
     } else if (temp == 0) {
         perform_piped_cmd(str_A, str_B, cmd_A, cmd_B);
     } else {
-        pid = wait(&stat);
+        if (is_background == false) {
+            pid = wait(&stat);
+        }
         return 0;
     }
     return 1;
@@ -456,7 +476,7 @@ int fout_cmd(int passed_in_index) {
 
     int j;
     for (j = 0; j < passed_in_index; ++j) {
-        str[j] = cmd.str[j];
+        str[j] = cmd.cmd_words[j];
     }
 
     str[j] = NULL;
@@ -468,7 +488,7 @@ int fout_cmd(int passed_in_index) {
     }
 
     saved_ptr3 = cmd_name;
-    int res = exec_fout(cmd_name, str, cmd.str[passed_in_index + 1]);
+    int res = exec_fout(cmd_name, str, cmd.cmd_words[passed_in_index + 1]);
     return res;
 }
 
@@ -478,7 +498,7 @@ int fin_cmd(int i) {
 
     int j;
     for (j = 0; j < i; ++j) {
-        str[j] = cmd.str[j];
+        str[j] = cmd.cmd_words[j];
     }
 
 
@@ -502,9 +522,11 @@ int fin_cmd(int i) {
     if (temp == -1) {
         perror("fork");
     } else if (temp == 0) {
-        exec_fin_file_cmd(cmd_name, str, cmd.str[i + 1]);
+        exec_fin_file_cmd(cmd_name, str, cmd.cmd_words[i + 1]);
     } else {
-        pid = wait(&stat);
+        if (is_background == false) {
+            pid = wait(&stat);
+        }
         return 0;
     }
     return 0;
@@ -523,12 +545,12 @@ int analyze_piped_cmds() {
 
 
     int i;
-    for (i = 0; i < cmd.size; ++i) {
-        if (strcmp(cmd.str[i], "<") == 0) { // file in command of pip
+    for (i = 0; i < cmd.words_size; ++i) {
+        if (strcmp(cmd.cmd_words[i], "<") == 0) { // file in command of pip
             return fin_cmd(i);
-        } else if (strcmp(cmd.str[i], ">") == 0) { // file out command of pip
+        } else if (strcmp(cmd.cmd_words[i], ">") == 0) { // file out command of pip
             return fout_cmd(i);
-        } else if (strcmp(cmd.str[i], "|") == 0) { // normal pip
+        } else if (strcmp(cmd.cmd_words[i], "|") == 0) { // normal pip
             return analyze_pip_cmd(i);
         }
     }
@@ -536,29 +558,29 @@ int analyze_piped_cmds() {
 }
 
 void perform_commands() {
-    if (strcmp("cd", cmd.str[0]) == 0) {
-        if (cmd.str[1] == NULL) { // if going back home
+    if (strcmp("cd", cmd.cmd_words[0]) == 0) {
+        if (cmd.cmd_words[1] == NULL) { // if going back home
             chdir(getenv("HOME"));
         } else {
-            if (strcmp(cmd.str[1], "..") == 0) { // If going back to a previous folder
-                if (chdir(cmd.str[1]) == -1) {
-                    printf("%s: No such directory in the current path\n", cmd.str[1]);
+            if (strcmp(cmd.cmd_words[1], "..") == 0) { // If going back to a previous folder
+                if (chdir(cmd.cmd_words[1]) == -1) {
+                    printf("%s: No such directory in the current path\n", cmd.cmd_words[1]);
                 }
-            } else if (cmd.size == 2) {
-                if (chdir(cmd.str[1]) == -1) {
-                    printf("%s: No such directory in the current path\n", cmd.str[1]);
+            } else if (cmd.words_size == 2) {
+                if (chdir(cmd.cmd_words[1]) == -1) {
+                    printf("%s: No such directory in the current path\n", cmd.cmd_words[1]);
                 }
             } else { // if accessing folder within directories
                 char check_dr_str[1024];
                 strcpy(check_dr_str, "");
                 int i;
-                for (i = 1; i < cmd.size; ++i) { // check for folders with spaces
-                    if (i < cmd.size - 1) {
-                        strcat(check_dr_str, cmd.str[i]);
+                for (i = 1; i < cmd.words_size; ++i) { // check for folders with spaces
+                    if (i < cmd.words_size - 1) {
+                        strcat(check_dr_str, cmd.cmd_words[i]);
                         check_dr_str[strlen(check_dr_str) - 1] = '\0';
                         strcat(check_dr_str, " ");
                     } else {
-                        strcat(check_dr_str, cmd.str[i]);
+                        strcat(check_dr_str, cmd.cmd_words[i]);
                     }
                 }
 
@@ -567,18 +589,18 @@ void perform_commands() {
                 }
             }
         }
-    } else if (strcmp("clear", cmd.str[0]) == 0) {
+    } else if (strcmp("clear", cmd.cmd_words[0]) == 0) {
         printf("\033[2J\033[1;1H");
     } else {
-        cmd.name = find_dir(cmd.str, current_path);
+        cmd.cmd_name = find_dir(cmd.cmd_words, current_path);
 
-        if (cmd.name != NULL) {
-            strcpy(static_char5, cmd.name);
-            cmd.name = static_char5;
+        if (cmd.cmd_name != NULL) {
+            strcpy(static_char5, cmd.cmd_name);
+            cmd.cmd_name = static_char5;
         }
 
-        saved_ptr5 = cmd.name;
-        if (cmd.name == NULL) {
+        saved_ptr5 = cmd.cmd_name;
+        if (cmd.cmd_name == NULL) {
             printf("Error command!!\n");
         }
 
@@ -587,29 +609,29 @@ void perform_commands() {
 }
 
 void perform_commands_with_input(struct tokinized_cmds cmd) {
-    if (strcmp("cd", cmd.str[0]) == 0) {
-        if (cmd.str[1] == NULL) { // if going back home
+    if (strcmp("cd", cmd.cmd_words[0]) == 0) {
+        if (cmd.cmd_words[1] == NULL) { // if going back home
             chdir(getenv("HOME"));
         } else {
-            if (strcmp(cmd.str[1], "..") == 0) { // If going back to a previous folder
-                if (chdir(cmd.str[1]) == -1) {
-                    printf("%s: No such directory in the current path\n", cmd.str[1]);
+            if (strcmp(cmd.cmd_words[1], "..") == 0) { // If going back to a previous folder
+                if (chdir(cmd.cmd_words[1]) == -1) {
+                    printf("%s: No such directory in the current path\n", cmd.cmd_words[1]);
                 }
-            } else if (cmd.size == 2) {
-                if (chdir(cmd.str[1]) == -1) {
-                    printf("%s: No such directory in the current path\n", cmd.str[1]);
+            } else if (cmd.words_size == 2) {
+                if (chdir(cmd.cmd_words[1]) == -1) {
+                    printf("%s: No such directory in the current path\n", cmd.cmd_words[1]);
                 }
             } else { // if accessing folder within directories
                 char check_dr_str[1024];
                 strcpy(check_dr_str, "");
                 int i;
-                for (i = 1; i < cmd.size; ++i) { // check for folders with spaces
-                    if (i < cmd.size - 1) {
-                        strcat(check_dr_str, cmd.str[i]);
+                for (i = 1; i < cmd.words_size; ++i) { // check for folders with spaces
+                    if (i < cmd.words_size - 1) {
+                        strcat(check_dr_str, cmd.cmd_words[i]);
                         check_dr_str[strlen(check_dr_str) - 1] = '\0';
                         strcat(check_dr_str, " ");
                     } else {
-                        strcat(check_dr_str, cmd.str[i]);
+                        strcat(check_dr_str, cmd.cmd_words[i]);
                     }
                 }
 
@@ -618,18 +640,18 @@ void perform_commands_with_input(struct tokinized_cmds cmd) {
                 }
             }
         }
-    } else if (strcmp("clear", cmd.str[0]) == 0) {
+    } else if (strcmp("clear", cmd.cmd_words[0]) == 0) {
         printf("\033[2J\033[1;1H");
     } else {
-        cmd.name = find_dir(cmd.str, current_path);
+        cmd.cmd_name = find_dir(cmd.cmd_words, current_path);
 
-        if (cmd.name != NULL) {
-            strcpy(static_char6, cmd.name);
-            cmd.name = static_char6;
+        if (cmd.cmd_name != NULL) {
+            strcpy(static_char6, cmd.cmd_name);
+            cmd.cmd_name = static_char6;
         }
 
-        saved_ptr6 = cmd.name;
-        if (cmd.name == NULL) {
+        saved_ptr6 = cmd.cmd_name;
+        if (cmd.cmd_name == NULL) {
             printf("Error command!!\n");
         }
 
@@ -637,7 +659,7 @@ void perform_commands_with_input(struct tokinized_cmds cmd) {
     }
 }
 
-void mini_garbage_collector() {
+void mini_garbage_collector_for_saved_ptrs() {
     if (saved_ptr1 != NULL) {
         if (saved_ptr1 == saved_ptr2) {
             saved_ptr2 = NULL;

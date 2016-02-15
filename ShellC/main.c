@@ -6,6 +6,7 @@ int main(int argc, char* argv[]) {
     h.size = 0;
     int loop_flag = 1; // break flag
     while (loop_flag == 1) {
+        is_background = false;
         signal(SIGINT, signal_handler);
         char printpath_cmd[1024];
         if (getcwd(printpath_cmd, sizeof (printpath_cmd)) != NULL) {
@@ -19,20 +20,26 @@ int main(int argc, char* argv[]) {
             flag = 0;
         } else if (inp != '\n') {
             process_one_word_cmd(cmd_line, &inp);
-            
+
             if ((strcmp(cmd_line, "exit") == 0) || (strcmp(cmd_line, "quit") == 0)) {
                 exit(EXIT_SUCCESS);
             } else if ((strcmp(cmd_line, "!!") == 0)) {
                 if (h.size > 0) {
-                    int i ;
+                    int i;
                     for (i = 0; i < h.cmds[0].size; ++i) {
-                        cmd.str[i] = h.cmds[0].str[i];
+                        cmd.cmd_words[i] = h.cmds[0].str[i];
                     }
-                    cmd.size = h.cmds[0].size;
+                    cmd.words_size = h.cmds[0].size;
                     for (i = 0; i < h.cmds[0].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No commands in history!!\n");
@@ -41,13 +48,19 @@ int main(int argc, char* argv[]) {
                 if (0 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[0].size; ++i) {
-                        cmd.str[i] = h.cmds[0].str[i];
+                        cmd.cmd_words[i] = h.cmds[0].str[i];
                     }
-                    cmd.size = h.cmds[0].size;
+                    cmd.words_size = h.cmds[0].size;
                     for (i = 0; i < h.cmds[0].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 1!!\n");
@@ -56,13 +69,19 @@ int main(int argc, char* argv[]) {
                 if (1 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[1].size; ++i) {
-                        cmd.str[i] = h.cmds[1].str[i];
+                        cmd.cmd_words[i] = h.cmds[1].str[i];
                     }
-                    cmd.size = h.cmds[1].size;
+                    cmd.words_size = h.cmds[1].size;
                     for (i = 0; i < h.cmds[1].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 2!!\n");
@@ -71,13 +90,19 @@ int main(int argc, char* argv[]) {
                 if (2 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[2].size; ++i) {
-                        cmd.str[i] = h.cmds[2].str[i];
+                        cmd.cmd_words[i] = h.cmds[2].str[i];
                     }
-                    cmd.size = h.cmds[2].size;
+                    cmd.words_size = h.cmds[2].size;
                     for (i = 0; i < h.cmds[2].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 3!!\n");
@@ -86,13 +111,19 @@ int main(int argc, char* argv[]) {
                 if (3 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[3].size; ++i) {
-                        cmd.str[i] = h.cmds[3].str[i];
+                        cmd.cmd_words[i] = h.cmds[3].str[i];
                     }
-                    cmd.size = h.cmds[3].size;
+                    cmd.words_size = h.cmds[3].size;
                     for (i = 0; i < h.cmds[3].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 4!!\n");
@@ -101,13 +132,19 @@ int main(int argc, char* argv[]) {
                 if (4 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[4].size; ++i) {
-                        cmd.str[i] = h.cmds[4].str[i];
+                        cmd.cmd_words[i] = h.cmds[4].str[i];
                     }
-                    cmd.size = h.cmds[4].size;
+                    cmd.words_size = h.cmds[4].size;
                     for (i = 0; i < h.cmds[4].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 5!!\n");
@@ -116,13 +153,19 @@ int main(int argc, char* argv[]) {
                 if (4 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[5].size; ++i) {
-                        cmd.str[i] = h.cmds[5].str[i];
+                        cmd.cmd_words[i] = h.cmds[5].str[i];
                     }
-                    cmd.size = h.cmds[5].size;
+                    cmd.words_size = h.cmds[5].size;
                     for (i = 0; i < h.cmds[5].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 6!!\n");
@@ -131,13 +174,19 @@ int main(int argc, char* argv[]) {
                 if (6 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[6].size; ++i) {
-                        cmd.str[i] = h.cmds[6].str[i];
+                        cmd.cmd_words[i] = h.cmds[6].str[i];
                     }
-                    cmd.size = h.cmds[6].size;
+                    cmd.words_size = h.cmds[6].size;
                     for (i = 0; i < h.cmds[6].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 7!!\n");
@@ -146,13 +195,19 @@ int main(int argc, char* argv[]) {
                 if (7 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[7].size; ++i) {
-                        cmd.str[i] = h.cmds[7].str[i];
+                        cmd.cmd_words[i] = h.cmds[7].str[i];
                     }
-                    cmd.size = h.cmds[7].size;
+                    cmd.words_size = h.cmds[7].size;
                     for (i = 0; i < h.cmds[7].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 8!!\n");
@@ -161,13 +216,19 @@ int main(int argc, char* argv[]) {
                 if (8 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[8].size; ++i) {
-                        cmd.str[i] = h.cmds[8].str[i];
+                        cmd.cmd_words[i] = h.cmds[8].str[i];
                     }
-                    cmd.size = h.cmds[8].size;
+                    cmd.words_size = h.cmds[8].size;
                     for (i = 0; i < h.cmds[8].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 9!!\n");
@@ -176,13 +237,19 @@ int main(int argc, char* argv[]) {
                 if (9 < h.size) {
                     int i;
                     for (i = 0; i < h.cmds[9].size; ++i) {
-                        cmd.str[i] = h.cmds[9].str[i];
+                        cmd.cmd_words[i] = h.cmds[9].str[i];
                     }
-                    cmd.size = h.cmds[9].size;
+                    cmd.words_size = h.cmds[9].size;
                     for (i = 0; i < h.cmds[9].size; ++i) {
-                        printf("%s ", cmd.str[i]);
+                        printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
+
+                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                        cmd.words_size = cmd.words_size - 1;
+                        is_background = true;
+                    }
+
                     perform_commands();
                 } else {
                     printf("No saved command in 10!!\n");
@@ -194,6 +261,12 @@ int main(int argc, char* argv[]) {
             } else {
                 tokenize_cmd(cmd_line, &cmd);
                 insert_history();
+
+                if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
+                    cmd.words_size = cmd.words_size - 1;
+                    is_background = true;
+                }
+
                 perform_commands();
             }
         }
