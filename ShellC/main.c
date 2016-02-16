@@ -22,6 +22,7 @@ int main(int argc, char* argv[]) {
             process_one_word_cmd(cmd_line, &inp);
 
             if ((strcmp(cmd_line, "exit") == 0) || (strcmp(cmd_line, "quit") == 0)) {
+                mini_garbage_collector_for_saved_ptrs();
                 exit(EXIT_SUCCESS);
             } else if ((strcmp(cmd_line, "!!") == 0)) {
                 if (h.size > 0) {
@@ -285,5 +286,6 @@ int main(int argc, char* argv[]) {
     }
 
     printf("\n");
+    mini_garbage_collector_for_saved_ptrs();
     exit(EXIT_SUCCESS);
 }

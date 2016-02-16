@@ -20,14 +20,7 @@ char* saved_ptr5 = NULL;
 char* saved_ptr6 = NULL;
 char* saved_ptr7 = NULL;
 
-char static_char1[9999999]; // to hold certain info from ptrs
-char static_char2[9999999]; // to hold certain info from ptrs
-char static_char3[9999999]; // to hold certain info from ptrs
-char static_char4[9999999]; // to hold certain info from ptrs
-char static_char5[9999999]; // to hold certain info from ptrs
-char static_char6[9999999]; // to hold certain info from ptrs
-char static_char7[9999999]; // to hold certain info from ptrs
-char buffer_sprintf[9999999]; // to override asprintf (i.e. static memory for asprintf)
+// pointers to the current command data
 
 struct tokinized_cmds {
     char *cmd_words[10];
@@ -55,7 +48,7 @@ static char *current_path[64];
 static char cmd_line[1024];
 
 char * find_dir(char **str_arr, char **look_up_dir) {
-    char *res;
+    char *res = NULL;
     char path_name[96];
     if (*str_arr[0] == '/') {
         return str_arr[0];
@@ -65,12 +58,7 @@ char * find_dir(char **str_arr, char **look_up_dir) {
                 perror("getcwd(): error\n");
             } else {
                 *--str_arr[0];
-                asprintf(&res, "%s%s%s", path_name, "/", str_arr[0]);
-                strcpy(buffer_sprintf, res);
-                if (res != NULL) {
-                    free(res);
-                }
-                res = buffer_sprintf;
+                asprintf(&res, "%s%s%s", path_name, "/", str_arr[0]); // create a new one and return it
             }
             return res;
         }
@@ -79,12 +67,7 @@ char * find_dir(char **str_arr, char **look_up_dir) {
             if (getcwd(path_name, sizeof (path_name)) == NULL)
                 perror("getcwd(): error\n");
             else {
-                asprintf(&res, "%s%s", path_name, str_arr[0]);
-                strcpy(buffer_sprintf, res);
-                if (res != NULL) {
-                    free(res);
-                }
-                res = buffer_sprintf;
+                asprintf(&res, "%s%s", path_name, str_arr[0]); // create a new one and return it
             }
             return res;
         }
@@ -93,18 +76,21 @@ char * find_dir(char **str_arr, char **look_up_dir) {
     int i;
     for (i = 0; i < 64; ++i) {
         if (look_up_dir[i] != NULL) {
-            asprintf(&res, "%s%s%s", look_up_dir[i], "/", str_arr[0]);
-            strcpy(buffer_sprintf, res);
+            // deleting in every loop - major memory leak if not doing so
             if (res != NULL) {
                 free(res);
             }
-            res = buffer_sprintf;
+            asprintf(&res, "%s%s%s", look_up_dir[i], "/", str_arr[0]);
             if (access(res, X_OK) == 0) {
                 return res;
             }
-        } else continue;
+        }
     }
 
+    // deleting if there is still non-deleted memory
+    if (res != NULL) {
+        free(res);
+    }
     fprintf(stderr, "%s: command not found\n", str_arr[0]);
     return NULL;
 }
@@ -119,13 +105,12 @@ int get_path(char* dirs[]) {
     for (i = 0; i < 513; i++)
         dirs[i] = NULL;
     current_env = (char*) getenv("PATH");
-    pth = (char*) malloc(strlen(current_env) + 1);
-
-    if (pth != NULL) {
-        strcpy(static_char7, pth);
-        free(pth);
-        pth = static_char7;
+    if (saved_ptr7 != NULL) {
+        free(saved_ptr7);
+        saved_ptr7 = NULL;
     }
+    saved_ptr7 = (char*) malloc(strlen(current_env) + 1);
+    pth = saved_ptr7;
 
     strcpy(pth, current_env);
     saved_ptr7 = pth;
@@ -180,19 +165,18 @@ int tokenize_cmd(char * cmd_ln, struct tokinized_cmds * command) {
     return 0;
 }
 
-int process_one_word_cmd(char * buffer, char * commandInput) {
-    int debug = 0;
+int process_one_word_cmd(char * buffer, char * cmd_inp) {
+    int err = 0;
     buf_chars = 0;
 
-
-    while ((*commandInput != '\n') && (buf_chars < 1024)) {
-        buffer[buf_chars++] = *commandInput;
-        *commandInput = getchar();
+    while ((*cmd_inp != '\n') && (buf_chars < 1024)) {
+        buffer[buf_chars++] = *cmd_inp;
+        *cmd_inp = getchar();
     }
     buffer[buf_chars] = '\0';
 
-    if (debug) {
-        printf("Stub: readCommand(char *)\n");
+    if (err == 1) {
+        printf("Error reading the command\n");
 
         int i;
         for (i = 0; i < buf_chars; i++) {
@@ -216,6 +200,7 @@ int exec_fin_file_cmd(char * passed_cmd_name, char * str_arr[], char * filename)
 
     if (pipe(file_dr_pip) == 1) {
         perror("pipe");
+        mini_garbage_collector_for_saved_ptrs();
         exit(127);
     }
 
@@ -223,6 +208,7 @@ int exec_fin_file_cmd(char * passed_cmd_name, char * str_arr[], char * filename)
 
     if (fork_stat == -1) {
         perror("fork()");
+        mini_garbage_collector_for_saved_ptrs();
         exit(127);
     } else if (fork_stat == 0) {
         close(file_dr_pip[0]);
@@ -242,6 +228,7 @@ int exec_fin_file_cmd(char * passed_cmd_name, char * str_arr[], char * filename)
             }
             fclose(p_fin);
         }
+        mini_garbage_collector_for_saved_ptrs();
         exit(EXIT_SUCCESS);
     } else {
         close(file_dr_pip[1]);
@@ -250,6 +237,7 @@ int exec_fin_file_cmd(char * passed_cmd_name, char * str_arr[], char * filename)
 
         execve(passed_cmd_name, str_arr, 0);
         perror(passed_cmd_name);
+        mini_garbage_collector_for_saved_ptrs();
         exit(125);
     }
     return 0;
@@ -272,6 +260,7 @@ int exec_fout(char * passed_cmd_nm, char * str_arr[], char * fin_name) {
         close(fout);
         close(define);
         execve(passed_cmd_nm, str_arr, 0);
+        mini_garbage_collector_for_saved_ptrs();
         exit(EXIT_SUCCESS);
         return 0;
     }
@@ -292,6 +281,7 @@ void perform_piped_cmd(char *argvA[], char *argvB[], char * nameA, char * nameB)
 
     if (pipe(pipefd)) {
         perror("pipe");
+        mini_garbage_collector_for_saved_ptrs();
         exit(127);
     }
 
@@ -299,12 +289,14 @@ void perform_piped_cmd(char *argvA[], char *argvB[], char * nameA, char * nameB)
 
     if (fork_stat == -1) {
         perror("fork()");
+        mini_garbage_collector_for_saved_ptrs();
         exit(127);
     } else if (fork_stat == 0) {
         close(pipefd[0]);
         dup2(pipefd[1], 1);
         close(pipefd[1]);
         execve(nameA, argvA, 0);
+        mini_garbage_collector_for_saved_ptrs();
         exit(126);
     } else {
         close(pipefd[1]);
@@ -312,6 +304,7 @@ void perform_piped_cmd(char *argvA[], char *argvB[], char * nameA, char * nameB)
         close(pipefd[0]);
         execve(nameB, argvB, 0);
         perror(nameB);
+        mini_garbage_collector_for_saved_ptrs();
         exit(125);
     }
 }
@@ -327,7 +320,6 @@ typedef struct history {
     copy_of_command cmds[10];
     int size;
 } history;
-
 
 history h;
 
@@ -388,6 +380,7 @@ int exec_systeml_commands() {
     } else if (child_pid_stat == 0) {
         execve(cmd.cmd_name, cmd.cmd_words, 0); // execution of external commands
         printf("System command exited!!\n");
+        mini_garbage_collector_for_saved_ptrs();
         exit(EXIT_SUCCESS);
         return 1;
     } else if (child_pid_stat > 0) {
@@ -396,6 +389,7 @@ int exec_systeml_commands() {
                 child_pid = waitpid(child_pid_stat, &stat, WUNTRACED | WCONTINUED);
                 if (child_pid == -1) {
                     perror("waitpid");
+                    mini_garbage_collector_for_saved_ptrs();
                     exit(EXIT_FAILURE);
                 }
 
@@ -425,14 +419,13 @@ int analyze_pip_cmd(int pased_index) {
         str_A[i] = cmd.cmd_words[i];
     }
     str_A[i] = NULL;
-    cmd_A = find_dir(str_A, current_path);
-
-    if (cmd_A != NULL) {
-        strcpy(static_char1, cmd_A);
-        cmd_A = static_char1;
+    if (saved_ptr1 != NULL) {
+        free(saved_ptr1);
+        saved_ptr1 = NULL;
     }
+    saved_ptr1 = find_dir(str_A, current_path);
+    cmd_A = saved_ptr1;
 
-    saved_ptr1 = cmd_A;
 
     int j1;
     int j2 = 0;
@@ -441,14 +434,12 @@ int analyze_pip_cmd(int pased_index) {
         j2++;
     }
     str_B[j2] = NULL;
-    cmd_B = find_dir(str_B, current_path);
-
-    if (cmd_B != NULL) {
-        strcpy(static_char2, cmd_B);
-        cmd_B = static_char2;
+    if (saved_ptr2 != NULL) {
+        free(saved_ptr2);
+        saved_ptr2 = NULL;
     }
-
-    saved_ptr2 = cmd_B;
+    saved_ptr2 = find_dir(str_B, current_path);
+    cmd_B = saved_ptr2;
 
     fflush(stdout);
 
@@ -480,14 +471,12 @@ int fout_cmd(int passed_in_index) {
     }
 
     str[j] = NULL;
-    cmd_name = find_dir(str, current_path);
-
-    if (cmd_name != NULL) {
-        strcpy(static_char3, cmd_name);
-        cmd_name = static_char3;
+    if (saved_ptr3 != NULL) {
+        free(saved_ptr3);
+        saved_ptr3 = NULL;
     }
-
-    saved_ptr3 = cmd_name;
+    saved_ptr3 = find_dir(str, current_path);
+    cmd_name = saved_ptr3;
     int res = exec_fout(cmd_name, str, cmd.cmd_words[passed_in_index + 1]);
     return res;
 }
@@ -503,14 +492,14 @@ int fin_cmd(int i) {
 
 
     str[j] = NULL;
-    cmd_name = find_dir(str, current_path);
-
-    if (cmd_name != NULL) {
-        strcpy(static_char4, cmd_name);
-        cmd_name = static_char4;
+    if (saved_ptr4 != NULL) {
+        free(saved_ptr4);
+        saved_ptr4 = NULL;
     }
+    saved_ptr4 = find_dir(str, current_path);
+    cmd_name = saved_ptr4;
 
-    saved_ptr4 = cmd_name;
+
 
     fflush(stdout);
 
@@ -592,14 +581,14 @@ void perform_commands() {
     } else if (strcmp("clear", cmd.cmd_words[0]) == 0) {
         printf("\033[2J\033[1;1H");
     } else {
-        cmd.cmd_name = find_dir(cmd.cmd_words, current_path);
-
-        if (cmd.cmd_name != NULL) {
-            strcpy(static_char5, cmd.cmd_name);
-            cmd.cmd_name = static_char5;
+        if (saved_ptr5 != NULL) {
+            free(saved_ptr5);
+            saved_ptr5 = NULL;
         }
+        saved_ptr5 = find_dir(cmd.cmd_words, current_path);
+        cmd.cmd_name = saved_ptr5;
 
-        saved_ptr5 = cmd.cmd_name;
+
         if (cmd.cmd_name == NULL) {
             printf("Error command!!\n");
         }
@@ -643,14 +632,13 @@ void perform_commands_with_input(struct tokinized_cmds cmd) {
     } else if (strcmp("clear", cmd.cmd_words[0]) == 0) {
         printf("\033[2J\033[1;1H");
     } else {
-        cmd.cmd_name = find_dir(cmd.cmd_words, current_path);
-
-        if (cmd.cmd_name != NULL) {
-            strcpy(static_char6, cmd.cmd_name);
-            cmd.cmd_name = static_char6;
+        if (saved_ptr6 != NULL) {
+            free(saved_ptr6);
+            saved_ptr6 = NULL;
         }
+        saved_ptr6 = find_dir(cmd.cmd_words, current_path);
+        cmd.cmd_name = saved_ptr6;
 
-        saved_ptr6 = cmd.cmd_name;
         if (cmd.cmd_name == NULL) {
             printf("Error command!!\n");
         }
