@@ -23,11 +23,25 @@ char* saved_ptr7 = NULL;
 // pointers to the current command data
 
 struct tokinized_cmds {
-    char *cmd_words[10];
+    char *cmd_words[513];
     char *cmd_name;
-    int words_size;
+    int word_count;
 };
 
+struct tokinized_cmds cmd;
+
+typedef struct command_storage {
+    char cmd_words[513][1024];
+    int word_count;
+} command_storage;
+
+typedef struct history {
+    command_storage cmds[10];
+    int size;
+} history;
+
+command_storage current_command;
+history h;
 
 bool is_background; // will be used for if there is & at the end of the command
 
@@ -35,7 +49,7 @@ bool is_background; // will be used for if there is & at the end of the command
 void prompt_char();
 void intro();
 int process_one_word_cmd(char *commandLine, char *commandInput);
-int tokenize_cmd(char *commandLine, struct tokinized_cmds *command);
+int tokenize_cmd(char *cmd_ln, struct tokinized_cmds *command);
 char * find_dir(char **, char **);
 int get_path(char **);
 int exec_fin_file_cmd(char *, char **, char *);
@@ -133,35 +147,35 @@ int get_path(char* dirs[]) {
 }
 
 int tokenize_cmd(char * cmd_ln, struct tokinized_cmds * command) {
-    int err = 0;
-
-    char * pch;
-    pch = strtok(cmd_ln, " ");
-    int i = 0;
-    while (pch != NULL) {
-        command->cmd_words[i] = pch;
-        pch = strtok(NULL, " ");
-        i++;
-    }
-    command->words_size = i;
-    command->cmd_words[i++] = NULL;
-
-    if (err == 1) {
-        printf("Stub: parseCommand(char, struct);\n");
-        printf("Array size: %i\n", sizeof (*command->cmd_words));
-        int j;
-        for (j = 0; j < i; j++) {
-            printf("command->argv[%i] = %s\n", j, command->cmd_words[j]);
-        }
-        printf("\ncommand->argc = %i\n", command->words_size);
-
-        if (command->cmd_words[0] != NULL) {
-            char **p;
-            for (p = &command->cmd_words[1]; *p != NULL; p++) {
-                printf("%s\n", *p);
+    current_command.word_count = 0;
+    int i;
+    for (i = 0; i < strlen(cmd_ln); ++i) {
+        if (cmd_ln[i] != ' ' && cmd_ln[i] != '\n' && cmd_ln[i] != '\t' && cmd_ln[i] != '\0') {
+            char temp[1024];
+            int current_index_at_temp = 0;
+            int j = 0;
+            for (j = i; j < strlen(cmd_ln) && (cmd_ln[j] != ' ' && cmd_ln[j] != '\n' && cmd_ln[j] != '\t' && cmd_ln[j] != '\0');) {
+                temp[current_index_at_temp] = cmd_ln[j];
+                ++current_index_at_temp;
+                ++j;
+                i = j;
             }
+            temp[j] = '\0';
+            strcpy(current_command.cmd_words[current_command.word_count], temp);
+            command->cmd_words[current_command.word_count] = current_command.cmd_words[current_command.word_count];
+            ++current_command.word_count;
+            for (j = 0; j < 1024; ++j) {
+                temp[j] = '\0';
+            }
+            current_index_at_temp = 0;
         }
     }
+    command->word_count = current_command.word_count;
+
+    for (i = command->word_count; i < 513; ++i) {
+        command->cmd_words[i] = NULL;
+    }
+    
     return 0;
 }
 
@@ -309,20 +323,6 @@ void perform_piped_cmd(char *argvA[], char *argvB[], char * nameA, char * nameB)
     }
 }
 
-struct tokinized_cmds cmd;
-
-typedef struct copy_of_command {
-    char str[513][1024];
-    int size;
-} copy_of_command;
-
-typedef struct history {
-    copy_of_command cmds[10];
-    int size;
-} history;
-
-history h;
-
 void insert_history() {
     if (h.size < 10) {
         ++h.size;
@@ -330,18 +330,18 @@ void insert_history() {
     int i;
     for (i = h.size - 1; i >= 1; --i) {
         int j;
-        for (j = 0; j < h.cmds[i - 1].size; ++j) {
-            strcpy(h.cmds[i].str[j], h.cmds[i - 1].str[j]);
+        for (j = 0; j < h.cmds[i - 1].word_count; ++j) {
+            strcpy(h.cmds[i].cmd_words[j], h.cmds[i - 1].cmd_words[j]);
         }
-        h.cmds[i].size = h.cmds[i - 1].size;
+        h.cmds[i].word_count = h.cmds[i - 1].word_count;
     }
 
 
-    for (i = 0; i < cmd.words_size; ++i) {
-        strcpy(h.cmds[0].str[i], cmd.cmd_words[i]);
+    for (i = 0; i < cmd.word_count; ++i) {
+        strcpy(h.cmds[0].cmd_words[i], cmd.cmd_words[i]);
     }
 
-    h.cmds[0].size = cmd.words_size;
+    h.cmds[0].word_count = cmd.word_count;
 }
 
 volatile sig_atomic_t flag = 0;
@@ -354,8 +354,8 @@ void signal_handler(int sig) {
         for (i = 0; i < h.size; ++i) {
             printf("%d: ", (i + 1));
             int j;
-            for (j = 0; j < h.cmds[i].size; ++j) {
-                printf("%s ", h.cmds[i].str[j]);
+            for (j = 0; j < h.cmds[i].word_count; ++j) {
+                printf("%s ", h.cmds[i].cmd_words[j]);
             }
             printf("\n");
         }
@@ -429,7 +429,7 @@ int analyze_pip_cmd(int pased_index) {
 
     int j1;
     int j2 = 0;
-    for (j1 = pased_index + 1; j1 < cmd.words_size; ++j1) {
+    for (j1 = pased_index + 1; j1 < cmd.word_count; ++j1) {
         str_B[j2] = cmd.cmd_words[j1];
         j2++;
     }
@@ -534,7 +534,7 @@ int analyze_piped_cmds() {
 
 
     int i;
-    for (i = 0; i < cmd.words_size; ++i) {
+    for (i = 0; i < cmd.word_count; ++i) {
         if (strcmp(cmd.cmd_words[i], "<") == 0) { // file in command of pip
             return fin_cmd(i);
         } else if (strcmp(cmd.cmd_words[i], ">") == 0) { // file out command of pip
@@ -555,7 +555,7 @@ void perform_commands() {
                 if (chdir(cmd.cmd_words[1]) == -1) {
                     printf("%s: No such directory in the current path\n", cmd.cmd_words[1]);
                 }
-            } else if (cmd.words_size == 2) {
+            } else if (cmd.word_count == 2) {
                 if (chdir(cmd.cmd_words[1]) == -1) {
                     printf("%s: No such directory in the current path\n", cmd.cmd_words[1]);
                 }
@@ -563,8 +563,8 @@ void perform_commands() {
                 char check_dr_str[1024];
                 strcpy(check_dr_str, "");
                 int i;
-                for (i = 1; i < cmd.words_size; ++i) { // check for folders with spaces
-                    if (i < cmd.words_size - 1) {
+                for (i = 1; i < cmd.word_count; ++i) { // check for folders with spaces
+                    if (i < cmd.word_count - 1) {
                         strcat(check_dr_str, cmd.cmd_words[i]);
                         check_dr_str[strlen(check_dr_str) - 1] = '\0';
                         strcat(check_dr_str, " ");
@@ -606,7 +606,7 @@ void perform_commands_with_input(struct tokinized_cmds cmd) {
                 if (chdir(cmd.cmd_words[1]) == -1) {
                     printf("%s: No such directory in the current path\n", cmd.cmd_words[1]);
                 }
-            } else if (cmd.words_size == 2) {
+            } else if (cmd.word_count == 2) {
                 if (chdir(cmd.cmd_words[1]) == -1) {
                     printf("%s: No such directory in the current path\n", cmd.cmd_words[1]);
                 }
@@ -614,8 +614,8 @@ void perform_commands_with_input(struct tokinized_cmds cmd) {
                 char check_dr_str[1024];
                 strcpy(check_dr_str, "");
                 int i;
-                for (i = 1; i < cmd.words_size; ++i) { // check for folders with spaces
-                    if (i < cmd.words_size - 1) {
+                for (i = 1; i < cmd.word_count; ++i) { // check for folders with spaces
+                    if (i < cmd.word_count - 1) {
                         strcat(check_dr_str, cmd.cmd_words[i]);
                         check_dr_str[strlen(check_dr_str) - 1] = '\0';
                         strcat(check_dr_str, " ");

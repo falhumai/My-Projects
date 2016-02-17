@@ -15,7 +15,9 @@ int main(int argc, char* argv[]) {
             perror("getcwd() of current directory error!!");
         }
         printf("> ");
+        
         inp = getchar(); //determine if to exec just '\n' or entire cmd
+        
         if (flag == 1) {
             flag = 0;
         } else if (inp != '\n') {
@@ -27,18 +29,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!!") == 0)) {
                 if (h.size > 0) {
                     int i;
-                    for (i = 0; i < h.cmds[0].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[0].str[i];
+                    for (i = 0; i < h.cmds[0].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[0].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[0].size;
-                    for (i = 0; i < h.cmds[0].size; ++i) {
+                    cmd.word_count = h.cmds[0].word_count;
+                    for (i = 0; i < h.cmds[0].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -49,18 +51,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!1") == 0)) {
                 if (0 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[0].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[0].str[i];
+                    for (i = 0; i < h.cmds[0].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[0].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[0].size;
-                    for (i = 0; i < h.cmds[0].size; ++i) {
+                    cmd.word_count = h.cmds[0].word_count;
+                    for (i = 0; i < h.cmds[0].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -71,18 +73,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!2") == 0)) {
                 if (1 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[1].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[1].str[i];
+                    for (i = 0; i < h.cmds[1].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[1].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[1].size;
-                    for (i = 0; i < h.cmds[1].size; ++i) {
+                    cmd.word_count = h.cmds[1].word_count;
+                    for (i = 0; i < h.cmds[1].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -93,18 +95,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!3") == 0)) {
                 if (2 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[2].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[2].str[i];
+                    for (i = 0; i < h.cmds[2].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[2].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[2].size;
-                    for (i = 0; i < h.cmds[2].size; ++i) {
+                    cmd.word_count = h.cmds[2].word_count;
+                    for (i = 0; i < h.cmds[2].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -115,18 +117,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!4") == 0)) {
                 if (3 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[3].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[3].str[i];
+                    for (i = 0; i < h.cmds[3].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[3].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[3].size;
-                    for (i = 0; i < h.cmds[3].size; ++i) {
+                    cmd.word_count = h.cmds[3].word_count;
+                    for (i = 0; i < h.cmds[3].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -137,18 +139,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!5") == 0)) {
                 if (4 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[4].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[4].str[i];
+                    for (i = 0; i < h.cmds[4].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[4].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[4].size;
-                    for (i = 0; i < h.cmds[4].size; ++i) {
+                    cmd.word_count = h.cmds[4].word_count;
+                    for (i = 0; i < h.cmds[4].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -159,18 +161,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!6") == 0)) {
                 if (4 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[5].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[5].str[i];
+                    for (i = 0; i < h.cmds[5].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[5].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[5].size;
-                    for (i = 0; i < h.cmds[5].size; ++i) {
+                    cmd.word_count = h.cmds[5].word_count;
+                    for (i = 0; i < h.cmds[5].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -181,18 +183,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!7") == 0)) {
                 if (6 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[6].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[6].str[i];
+                    for (i = 0; i < h.cmds[6].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[6].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[6].size;
-                    for (i = 0; i < h.cmds[6].size; ++i) {
+                    cmd.word_count = h.cmds[6].word_count;
+                    for (i = 0; i < h.cmds[6].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -203,18 +205,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!8") == 0)) {
                 if (7 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[7].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[7].str[i];
+                    for (i = 0; i < h.cmds[7].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[7].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[7].size;
-                    for (i = 0; i < h.cmds[7].size; ++i) {
+                    cmd.word_count = h.cmds[7].word_count;
+                    for (i = 0; i < h.cmds[7].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -225,18 +227,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!9") == 0)) {
                 if (8 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[8].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[8].str[i];
+                    for (i = 0; i < h.cmds[8].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[8].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[8].size;
-                    for (i = 0; i < h.cmds[8].size; ++i) {
+                    cmd.word_count = h.cmds[8].word_count;
+                    for (i = 0; i < h.cmds[8].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -247,18 +249,18 @@ int main(int argc, char* argv[]) {
             } else if ((strcmp(cmd_line, "!10") == 0)) {
                 if (9 < h.size) {
                     int i;
-                    for (i = 0; i < h.cmds[9].size; ++i) {
-                        cmd.cmd_words[i] = h.cmds[9].str[i];
+                    for (i = 0; i < h.cmds[9].word_count; ++i) {
+                        cmd.cmd_words[i] = h.cmds[9].cmd_words[i];
                     }
-                    cmd.words_size = h.cmds[9].size;
-                    for (i = 0; i < h.cmds[9].size; ++i) {
+                    cmd.word_count = h.cmds[9].word_count;
+                    for (i = 0; i < h.cmds[9].word_count; ++i) {
                         printf("%s ", cmd.cmd_words[i]);
                     }
                     printf("\n");
 
-                    if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                        cmd.cmd_words[cmd.words_size - 1] = NULL;
-                        cmd.words_size = cmd.words_size - 1;
+                    if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                        cmd.cmd_words[cmd.word_count - 1] = NULL;
+                        cmd.word_count = cmd.word_count - 1;
                         is_background = true;
                     }
 
@@ -274,9 +276,9 @@ int main(int argc, char* argv[]) {
                 tokenize_cmd(cmd_line, &cmd);
                 insert_history();
 
-                if (strcmp(cmd.cmd_words[cmd.words_size - 1], "&") == 0 && cmd.words_size > 1) {
-                    cmd.cmd_words[cmd.words_size - 1] = NULL;
-                    cmd.words_size = cmd.words_size - 1;
+                if (strcmp(cmd.cmd_words[cmd.word_count - 1], "&") == 0 && cmd.word_count > 1) {
+                    cmd.cmd_words[cmd.word_count - 1] = NULL;
+                    cmd.word_count = cmd.word_count - 1;
                     is_background = true;
                 }
 
