@@ -22,13 +22,23 @@ char* saved_ptr7 = NULL;
 
 // pointers to the current command data
 
+<<<<<<< HEAD
 struct tokinized_cmds { // just pointers to the current commands read
+=======
+struct tokinized_cmds {
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
     char *cmd_words[513];
     char *cmd_name;
     int word_count;
 };
 
+<<<<<<< HEAD
 typedef struct command_storage { // will hold the cmd words and the number of commands
+=======
+struct tokinized_cmds cmd;
+
+typedef struct command_storage {
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
     char cmd_words[513][1024];
     int word_count;
 } command_storage;
@@ -38,6 +48,7 @@ typedef struct history {
     int size;
 } history;
 
+<<<<<<< HEAD
 
 struct tokinized_cmds cmd;
 command_storage current_command; // storage for the current command only
@@ -249,24 +260,61 @@ void mini_garbage_collector_for_saved_ptrs() {
 char* find_dir(char** str_arr, char** look_up_dir) {
     char* res = NULL;
     char path_name[1024];
+=======
+command_storage current_command;
+history h;
+
+bool is_background; // will be used for if there is & at the end of the command
+
+
+void prompt_char();
+void intro();
+int process_one_word_cmd(char *commandLine, char *commandInput);
+int tokenize_cmd(char *cmd_ln, struct tokinized_cmds *command);
+char * find_dir(char **, char **);
+int get_path(char **);
+int exec_fin_file_cmd(char *, char **, char *);
+int exec_fout(char *, char **, char *);
+void perform_piped_cmd(char **, char **, char *, char *);
+
+char inp = '\0';
+int buf_chars = 0;
+char* current_path[64];
+char cmd_line[1024];
+
+char * find_dir(char **str_arr, char **look_up_dir) {
+    char *res = NULL;
+    char path_name[96];
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
     if (*str_arr[0] == '/') {
         return str_arr[0];
     } else if (*str_arr[0] == '.') {
         if (*++str_arr[0] == '.') {
             if (getcwd(path_name, sizeof (path_name)) == NULL) {
+<<<<<<< HEAD
                 perror("getcwd(): error\n");  // executable not found
+=======
+                perror("getcwd(): error\n");
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
             } else {
                 *--str_arr[0];
                 asprintf(&res, "%s%s%s", path_name, "/", str_arr[0]); // create a new one and return it
             }
             return res;
         }
+<<<<<<< HEAD
         
         
         *--str_arr[0];
         if (*++str_arr[0] == '/') {
             if (getcwd(path_name, sizeof (path_name)) == NULL)
                 perror("getcwd(): error\n"); // path not found
+=======
+        *--str_arr[0];
+        if (*++str_arr[0] == '/') {
+            if (getcwd(path_name, sizeof (path_name)) == NULL)
+                perror("getcwd(): error\n");
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
             else {
                 asprintf(&res, "%s%s", path_name, str_arr[0]); // create a new one and return it
             }
@@ -275,7 +323,11 @@ char* find_dir(char** str_arr, char** look_up_dir) {
     }
 
     int i;
+<<<<<<< HEAD
     for (i = 0; i < 1024; ++i) {
+=======
+    for (i = 0; i < 64; ++i) {
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
         if (look_up_dir[i] != NULL) {
             // deleting in every loop - major memory leak if not doing so
             if (res != NULL) {
@@ -297,6 +349,10 @@ char* find_dir(char** str_arr, char** look_up_dir) {
 }
 
 int get_path(char* dirs[]) {
+<<<<<<< HEAD
+=======
+    int error = 0;
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
     char* current_env;
     char* pth;
 
@@ -309,7 +365,11 @@ int get_path(char* dirs[]) {
         free(saved_ptr7);
         saved_ptr7 = NULL;
     }
+<<<<<<< HEAD
     saved_ptr7 = (char*) malloc((sizeof(char) * strlen(current_env)) + 1); // the extra 1 is for \0
+=======
+    saved_ptr7 = (char*) malloc(strlen(current_env) + 1);
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
     pth = saved_ptr7;
 
     strcpy(pth, current_env);
@@ -321,6 +381,18 @@ int get_path(char* dirs[]) {
         pch = strtok(NULL, ":");
         dirs[j] = pch;
     }
+<<<<<<< HEAD
+=======
+
+
+    if (error == 1) {
+        printf("Directories in PATH variable\n");
+        for (i = 0; i < 64; i++)
+            if (dirs[i] != '\0') {
+                printf("Directory[%d]: %s\n", i, dirs[i]);
+            }
+    }
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
 }
 
 int tokenize_cmd(char * cmd_ln, struct tokinized_cmds * command) {
@@ -356,7 +428,12 @@ int tokenize_cmd(char * cmd_ln, struct tokinized_cmds * command) {
     return 0;
 }
 
+<<<<<<< HEAD
 int process_one_word_cmd(char* buffer, char* cmd_inp) {
+=======
+int process_one_word_cmd(char * buffer, char * cmd_inp) {
+    int err = 0;
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
     buf_chars = 0;
 
     while ((*cmd_inp != '\n') && (buf_chars < 1024)) {
@@ -364,6 +441,27 @@ int process_one_word_cmd(char* buffer, char* cmd_inp) {
         *cmd_inp = getchar();
     }
     buffer[buf_chars] = '\0';
+<<<<<<< HEAD
+=======
+
+    if (err == 1) {
+        printf("Error reading the command\n");
+
+        int i;
+        for (i = 0; i < buf_chars; i++) {
+            printf("buffer[%i] = %c\n", i, buffer[i]);
+        }
+        printf("\nlength: %i\n", buf_chars - 1);
+        printf("\n1. buffer %s\n", buffer);
+        printf("2. buffer[%i] = %c\n", buf_chars - 2, buffer[buf_chars - 2]);
+        if (buffer[buf_chars - 1] == '\n') {
+            printf("3. buffer[%i] = '\\n'\n", buf_chars - 1);
+        }
+        if (buffer[buf_chars] == '\0') {
+            printf("4. buffer[%i] = '\\0'\n", buf_chars);
+        }
+    }
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
     return 0;
 }
 
@@ -803,4 +901,205 @@ void perform_commands_with_input(struct tokinized_cmds cmd) {
     }
 }
 
+<<<<<<< HEAD
+=======
+void mini_garbage_collector_for_saved_ptrs() {
+    if (saved_ptr1 != NULL) {
+        if (saved_ptr1 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr1);
+        saved_ptr1 = NULL;
+    }
+
+    if (saved_ptr2 != NULL) {
+        if (saved_ptr2 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr2);
+        saved_ptr2 = NULL;
+    }
+
+    if (saved_ptr3 != NULL) {
+        if (saved_ptr3 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr3);
+        saved_ptr3 = NULL;
+    }
+
+    if (saved_ptr4 != NULL) {
+        if (saved_ptr4 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr4);
+        saved_ptr4 = NULL;
+    }
+
+    if (saved_ptr5 != NULL) {
+        if (saved_ptr5 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr5);
+        saved_ptr5 = NULL;
+    }
+
+    if (saved_ptr6 != NULL) {
+        if (saved_ptr6 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr6);
+        saved_ptr6 = NULL;
+    }
+
+    if (saved_ptr7 != NULL) {
+        if (saved_ptr7 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+        free(saved_ptr7);
+        saved_ptr7 = NULL;
+    }
+}
+
+>>>>>>> 22d87d43c50e628109bcbdda84cbebe6e58df21e
 #endif
