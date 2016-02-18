@@ -56,10 +56,10 @@ int exec_fin_file_cmd(char *, char **, char *);
 int exec_fout(char *, char **, char *);
 void perform_piped_cmd(char **, char **, char *, char *);
 
-static char inp = '\0';
-static int buf_chars = 0;
-static char *current_path[64];
-static char cmd_line[1024];
+char inp = '\0';
+int buf_chars = 0;
+char* current_path[64];
+char cmd_line[1024];
 
 char * find_dir(char **str_arr, char **look_up_dir) {
     char *res = NULL;
@@ -175,7 +175,7 @@ int tokenize_cmd(char * cmd_ln, struct tokinized_cmds * command) {
     for (i = command->word_count; i < 513; ++i) {
         command->cmd_words[i] = NULL;
     }
-    
+
     return 0;
 }
 
@@ -344,11 +344,8 @@ void insert_history() {
     h.cmds[0].word_count = cmd.word_count;
 }
 
-volatile sig_atomic_t flag = 0;
-
 void signal_handler(int sig) {
     if (sig == SIGINT) {
-        flag = 1;
         printf("\n");
         int i;
         for (i = 0; i < h.size; ++i) {
@@ -365,7 +362,8 @@ void signal_handler(int sig) {
         } else {
             perror("getcwd() of current directory error!!");
         }
-        printf(">\n ");
+        printf("> ");
+        printf("\n");
     }
 }
 
