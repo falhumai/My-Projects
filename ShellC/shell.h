@@ -22,64 +22,252 @@ char* saved_ptr7 = NULL;
 
 // pointers to the current command data
 
-struct tokinized_cmds {
+struct tokinized_cmds { // just pointers to the current commands read
     char *cmd_words[513];
     char *cmd_name;
     int word_count;
 };
 
-struct tokinized_cmds cmd;
-
-typedef struct command_storage {
+typedef struct command_storage { // will hold the cmd words and the number of commands
     char cmd_words[513][1024];
     int word_count;
 } command_storage;
 
 typedef struct history {
-    command_storage cmds[10];
+    command_storage cmds[11];
     int size;
 } history;
 
-command_storage current_command;
-history h;
 
+struct tokinized_cmds cmd;
+command_storage current_command; // storage for the current command only
+history h; // storage for history commands
 bool is_background; // will be used for if there is & at the end of the command
-
-
-void prompt_char();
-void intro();
-int process_one_word_cmd(char *commandLine, char *commandInput);
-int tokenize_cmd(char *cmd_ln, struct tokinized_cmds *command);
-char * find_dir(char **, char **);
-int get_path(char **);
-int exec_fin_file_cmd(char *, char **, char *);
-int exec_fout(char *, char **, char *);
-void perform_piped_cmd(char **, char **, char *, char *);
-
 char inp = '\0';
 int buf_chars = 0;
-char* current_path[64];
+char* current_path[1024];
 char cmd_line[1024];
+int current_history_start = 0;
 
-char * find_dir(char **str_arr, char **look_up_dir) {
-    char *res = NULL;
-    char path_name[96];
+void mini_garbage_collector_for_saved_ptrs() {
+    if (saved_ptr1 != NULL) {
+        if (saved_ptr1 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr1 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr1);
+        saved_ptr1 = NULL;
+    }
+
+    if (saved_ptr2 != NULL) {
+        if (saved_ptr2 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr2 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr2);
+        saved_ptr2 = NULL;
+    }
+
+    if (saved_ptr3 != NULL) {
+        if (saved_ptr3 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr3 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr3);
+        saved_ptr3 = NULL;
+    }
+
+    if (saved_ptr4 != NULL) {
+        if (saved_ptr4 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr4 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr4);
+        saved_ptr4 = NULL;
+    }
+
+    if (saved_ptr5 != NULL) {
+        if (saved_ptr5 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+
+        if (saved_ptr5 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr5);
+        saved_ptr5 = NULL;
+    }
+
+    if (saved_ptr6 != NULL) {
+        if (saved_ptr6 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr6 == saved_ptr7) {
+            saved_ptr7 = NULL;
+        }
+        free(saved_ptr6);
+        saved_ptr6 = NULL;
+    }
+
+    if (saved_ptr7 != NULL) {
+        if (saved_ptr7 == saved_ptr1) {
+            saved_ptr1 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr2) {
+            saved_ptr2 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr3) {
+            saved_ptr3 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr4) {
+            saved_ptr4 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr5) {
+            saved_ptr5 = NULL;
+        }
+
+        if (saved_ptr7 == saved_ptr6) {
+            saved_ptr6 = NULL;
+        }
+        free(saved_ptr7);
+        saved_ptr7 = NULL;
+    }
+}
+
+char* find_dir(char** str_arr, char** look_up_dir) {
+    char* res = NULL;
+    char path_name[1024];
     if (*str_arr[0] == '/') {
         return str_arr[0];
     } else if (*str_arr[0] == '.') {
         if (*++str_arr[0] == '.') {
             if (getcwd(path_name, sizeof (path_name)) == NULL) {
-                perror("getcwd(): error\n");
+                perror("getcwd(): error\n"); // executable not found
             } else {
                 *--str_arr[0];
                 asprintf(&res, "%s%s%s", path_name, "/", str_arr[0]); // create a new one and return it
             }
             return res;
         }
+
+
         *--str_arr[0];
         if (*++str_arr[0] == '/') {
             if (getcwd(path_name, sizeof (path_name)) == NULL)
-                perror("getcwd(): error\n");
+                perror("getcwd(): error\n"); // path not found
             else {
                 asprintf(&res, "%s%s", path_name, str_arr[0]); // create a new one and return it
             }
@@ -88,7 +276,7 @@ char * find_dir(char **str_arr, char **look_up_dir) {
     }
 
     int i;
-    for (i = 0; i < 64; ++i) {
+    for (i = 0; i < 1024; ++i) {
         if (look_up_dir[i] != NULL) {
             // deleting in every loop - major memory leak if not doing so
             if (res != NULL) {
@@ -110,7 +298,6 @@ char * find_dir(char **str_arr, char **look_up_dir) {
 }
 
 int get_path(char* dirs[]) {
-    int error = 0;
     char* current_env;
     char* pth;
 
@@ -123,7 +310,7 @@ int get_path(char* dirs[]) {
         free(saved_ptr7);
         saved_ptr7 = NULL;
     }
-    saved_ptr7 = (char*) malloc(strlen(current_env) + 1);
+    saved_ptr7 = (char*) malloc((sizeof (char) * strlen(current_env)) + 1); // the extra 1 is for \0
     pth = saved_ptr7;
 
     strcpy(pth, current_env);
@@ -134,15 +321,6 @@ int get_path(char* dirs[]) {
     for (j = 0; pch != NULL; ++j) {
         pch = strtok(NULL, ":");
         dirs[j] = pch;
-    }
-
-
-    if (error == 1) {
-        printf("Directories in PATH variable\n");
-        for (i = 0; i < 64; i++)
-            if (dirs[i] != '\0') {
-                printf("Directory[%d]: %s\n", i, dirs[i]);
-            }
     }
 }
 
@@ -179,8 +357,7 @@ int tokenize_cmd(char * cmd_ln, struct tokinized_cmds * command) {
     return 0;
 }
 
-int process_one_word_cmd(char * buffer, char * cmd_inp) {
-    int err = 0;
+int process_one_word_cmd(char* buffer, char* cmd_inp) {
     buf_chars = 0;
 
     while ((*cmd_inp != '\n') && (buf_chars < 1024)) {
@@ -188,24 +365,6 @@ int process_one_word_cmd(char * buffer, char * cmd_inp) {
         *cmd_inp = getchar();
     }
     buffer[buf_chars] = '\0';
-
-    if (err == 1) {
-        printf("Error reading the command\n");
-
-        int i;
-        for (i = 0; i < buf_chars; i++) {
-            printf("buffer[%i] = %c\n", i, buffer[i]);
-        }
-        printf("\nlength: %i\n", buf_chars - 1);
-        printf("\n1. buffer %s\n", buffer);
-        printf("2. buffer[%i] = %c\n", buf_chars - 2, buffer[buf_chars - 2]);
-        if (buffer[buf_chars - 1] == '\n') {
-            printf("3. buffer[%i] = '\\n'\n", buf_chars - 1);
-        }
-        if (buffer[buf_chars] == '\0') {
-            printf("4. buffer[%i] = '\\0'\n", buf_chars);
-        }
-    }
     return 0;
 }
 
@@ -324,24 +483,32 @@ void perform_piped_cmd(char *argvA[], char *argvB[], char * nameA, char * nameB)
 }
 
 void insert_history() {
-    if (h.size < 10) {
-        ++h.size;
-    }
     int i;
-    for (i = h.size - 1; i >= 1; --i) {
-        int j;
-        for (j = 0; j < h.cmds[i - 1].word_count; ++j) {
-            strcpy(h.cmds[i].cmd_words[j], h.cmds[i - 1].cmd_words[j]);
+    bool entered = false;
+    if (h.size == 10) {
+        entered = true;
+        for (i = 0; i < h.size - 1; ++i) {
+            int j;
+            for (j = 0; j < h.cmds[i + 1].word_count; ++j) {
+                strcpy(h.cmds[i].cmd_words[j], h.cmds[i + 1].cmd_words[j]);
+            }
+            h.cmds[i].word_count = h.cmds[i + 1].word_count;
         }
-        h.cmds[i].word_count = h.cmds[i - 1].word_count;
+        ++current_history_start;
     }
 
-
-    for (i = 0; i < cmd.word_count; ++i) {
-        strcpy(h.cmds[0].cmd_words[i], cmd.cmd_words[i]);
+    if (entered == false) {
+        for (i = 0; i < cmd.word_count; ++i) {
+            strcpy(h.cmds[h.size].cmd_words[i], cmd.cmd_words[i]);
+        }
+        h.cmds[h.size].word_count = cmd.word_count;
+        ++h.size;
+    } else {
+        for (i = 0; i < cmd.word_count; ++i) {
+            strcpy(h.cmds[9].cmd_words[i], cmd.cmd_words[i]);
+        }
+        h.cmds[9].word_count = cmd.word_count;
     }
-
-    h.cmds[0].word_count = cmd.word_count;
 }
 
 void signal_handler(int sig) {
@@ -349,7 +516,7 @@ void signal_handler(int sig) {
         printf("\n");
         int i;
         for (i = 0; i < h.size; ++i) {
-            printf("%d: ", (i + 1));
+            printf("%d: ", (current_history_start + i + 1));
             int j;
             for (j = 0; j < h.cmds[i].word_count; ++j) {
                 printf("%s ", h.cmds[i].cmd_words[j]);
@@ -642,204 +809,6 @@ void perform_commands_with_input(struct tokinized_cmds cmd) {
         }
 
         analyze_piped_cmds();
-    }
-}
-
-void mini_garbage_collector_for_saved_ptrs() {
-    if (saved_ptr1 != NULL) {
-        if (saved_ptr1 == saved_ptr2) {
-            saved_ptr2 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr3) {
-            saved_ptr3 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr4) {
-            saved_ptr4 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr5) {
-            saved_ptr5 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr6) {
-            saved_ptr6 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr7) {
-            saved_ptr7 = NULL;
-        }
-        free(saved_ptr1);
-        saved_ptr1 = NULL;
-    }
-
-    if (saved_ptr2 != NULL) {
-        if (saved_ptr2 == saved_ptr1) {
-            saved_ptr1 = NULL;
-        }
-
-        if (saved_ptr2 == saved_ptr3) {
-            saved_ptr3 = NULL;
-        }
-
-        if (saved_ptr2 == saved_ptr4) {
-            saved_ptr4 = NULL;
-        }
-
-        if (saved_ptr2 == saved_ptr5) {
-            saved_ptr5 = NULL;
-        }
-
-        if (saved_ptr2 == saved_ptr6) {
-            saved_ptr6 = NULL;
-        }
-
-        if (saved_ptr2 == saved_ptr7) {
-            saved_ptr7 = NULL;
-        }
-        free(saved_ptr2);
-        saved_ptr2 = NULL;
-    }
-
-    if (saved_ptr3 != NULL) {
-        if (saved_ptr3 == saved_ptr1) {
-            saved_ptr1 = NULL;
-        }
-
-        if (saved_ptr3 == saved_ptr2) {
-            saved_ptr2 = NULL;
-        }
-
-        if (saved_ptr3 == saved_ptr4) {
-            saved_ptr4 = NULL;
-        }
-
-        if (saved_ptr3 == saved_ptr5) {
-            saved_ptr5 = NULL;
-        }
-
-        if (saved_ptr3 == saved_ptr6) {
-            saved_ptr6 = NULL;
-        }
-
-        if (saved_ptr3 == saved_ptr7) {
-            saved_ptr7 = NULL;
-        }
-        free(saved_ptr3);
-        saved_ptr3 = NULL;
-    }
-
-    if (saved_ptr4 != NULL) {
-        if (saved_ptr4 == saved_ptr1) {
-            saved_ptr1 = NULL;
-        }
-
-        if (saved_ptr4 == saved_ptr2) {
-            saved_ptr2 = NULL;
-        }
-
-        if (saved_ptr4 == saved_ptr3) {
-            saved_ptr3 = NULL;
-        }
-
-        if (saved_ptr4 == saved_ptr5) {
-            saved_ptr5 = NULL;
-        }
-
-        if (saved_ptr4 == saved_ptr6) {
-            saved_ptr6 = NULL;
-        }
-
-        if (saved_ptr4 == saved_ptr7) {
-            saved_ptr7 = NULL;
-        }
-        free(saved_ptr4);
-        saved_ptr4 = NULL;
-    }
-
-    if (saved_ptr5 != NULL) {
-        if (saved_ptr5 == saved_ptr1) {
-            saved_ptr1 = NULL;
-        }
-
-        if (saved_ptr5 == saved_ptr2) {
-            saved_ptr2 = NULL;
-        }
-
-        if (saved_ptr5 == saved_ptr3) {
-            saved_ptr3 = NULL;
-        }
-
-        if (saved_ptr5 == saved_ptr4) {
-            saved_ptr4 = NULL;
-        }
-
-        if (saved_ptr5 == saved_ptr6) {
-            saved_ptr6 = NULL;
-        }
-
-        if (saved_ptr5 == saved_ptr7) {
-            saved_ptr7 = NULL;
-        }
-        free(saved_ptr5);
-        saved_ptr5 = NULL;
-    }
-
-    if (saved_ptr6 != NULL) {
-        if (saved_ptr6 == saved_ptr1) {
-            saved_ptr1 = NULL;
-        }
-
-        if (saved_ptr6 == saved_ptr2) {
-            saved_ptr2 = NULL;
-        }
-
-        if (saved_ptr6 == saved_ptr3) {
-            saved_ptr3 = NULL;
-        }
-
-        if (saved_ptr6 == saved_ptr4) {
-            saved_ptr4 = NULL;
-        }
-
-        if (saved_ptr6 == saved_ptr5) {
-            saved_ptr5 = NULL;
-        }
-
-        if (saved_ptr6 == saved_ptr7) {
-            saved_ptr7 = NULL;
-        }
-        free(saved_ptr6);
-        saved_ptr6 = NULL;
-    }
-
-    if (saved_ptr7 != NULL) {
-        if (saved_ptr7 == saved_ptr1) {
-            saved_ptr1 = NULL;
-        }
-
-        if (saved_ptr7 == saved_ptr2) {
-            saved_ptr2 = NULL;
-        }
-
-        if (saved_ptr7 == saved_ptr3) {
-            saved_ptr3 = NULL;
-        }
-
-        if (saved_ptr7 == saved_ptr4) {
-            saved_ptr4 = NULL;
-        }
-
-        if (saved_ptr7 == saved_ptr5) {
-            saved_ptr5 = NULL;
-        }
-
-        if (saved_ptr7 == saved_ptr6) {
-            saved_ptr6 = NULL;
-        }
-        free(saved_ptr7);
-        saved_ptr7 = NULL;
     }
 }
 

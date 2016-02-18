@@ -32,7 +32,7 @@ CXX=CC
 # The dependencies of "all" are the files (or make targets) that we want to build.
 #
 
-all: shell test
+all: shell
 
 # Compile all .c files into .o files
 # % matches all (like * in a command)
