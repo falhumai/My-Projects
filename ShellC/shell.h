@@ -78,38 +78,6 @@ void mini_garbage_collector_for_saved_ptrs() {
         saved_ptr1 = NULL;
     }
 
-<<<<<<< HEAD
-=======
-void mini_garbage_collector_for_saved_ptrs() {
-    if (saved_ptr1 != NULL) {
-        if (saved_ptr1 == saved_ptr2) {
-            saved_ptr2 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr3) {
-            saved_ptr3 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr4) {
-            saved_ptr4 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr5) {
-            saved_ptr5 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr6) {
-            saved_ptr6 = NULL;
-        }
-
-        if (saved_ptr1 == saved_ptr7) {
-            saved_ptr7 = NULL;
-        }
-        free(saved_ptr1);
-        saved_ptr1 = NULL;
-    }
-
->>>>>>> db153a4241519b992e0d715f15d13b8dfac35c35
     if (saved_ptr2 != NULL) {
         if (saved_ptr2 == saved_ptr1) {
             saved_ptr1 = NULL;
@@ -287,24 +255,15 @@ char* find_dir(char** str_arr, char** look_up_dir) {
     } else if (*str_arr[0] == '.') {
         if (*++str_arr[0] == '.') {
             if (getcwd(path_name, sizeof (path_name)) == NULL) {
-<<<<<<< HEAD
                 perror("getcwd(): error\n"); // executable not found
-=======
-                perror("getcwd(): error\n");  // executable not found
->>>>>>> db153a4241519b992e0d715f15d13b8dfac35c35
             } else {
                 *--str_arr[0];
                 asprintf(&res, "%s%s%s", path_name, "/", str_arr[0]); // create a new one and return it
             }
             return res;
         }
-<<<<<<< HEAD
 
 
-=======
-        
-        
->>>>>>> db153a4241519b992e0d715f15d13b8dfac35c35
         *--str_arr[0];
         if (*++str_arr[0] == '/') {
             if (getcwd(path_name, sizeof (path_name)) == NULL)
@@ -351,11 +310,7 @@ int get_path(char* dirs[]) {
         free(saved_ptr7);
         saved_ptr7 = NULL;
     }
-<<<<<<< HEAD
     saved_ptr7 = (char*) malloc((sizeof (char) * strlen(current_env)) + 1); // the extra 1 is for \0
-=======
-    saved_ptr7 = (char*) malloc((sizeof(char) * strlen(current_env)) + 1); // the extra 1 is for \0
->>>>>>> db153a4241519b992e0d715f15d13b8dfac35c35
     pth = saved_ptr7;
 
     strcpy(pth, current_env);

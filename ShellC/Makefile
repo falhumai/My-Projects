@@ -1,53 +1,128 @@
-## This is a simple Makefile with lost of comments 
-## Check Unix Programming Tools handout for more info.
-
-# Define what compiler to use and the flags.
-CC=cc
-CXX=CC
-#CCFLAGS= -g -std=c99 -Wall -Werror
-
-# A rule in Makefile has the form:
 #
-# target: dependencies
-#	command
+#  There exist several targets which are by default empty and which can be 
+#  used for execution of your targets. These targets are usually executed 
+#  before and after some main targets. They are: 
 #
-# where "target" and "dependencies" are files (most of the time).
-# These means that if "target" does not exist or the modification 
-# date of the dependencies are older than the modification time of
-# "target" then "command" is executed.
+#     .build-pre:              called before 'build' target
+#     .build-post:             called after 'build' target
+#     .clean-pre:              called before 'clean' target
+#     .clean-post:             called after 'clean' target
+#     .clobber-pre:            called before 'clobber' target
+#     .clobber-post:           called after 'clobber' target
+#     .all-pre:                called before 'all' target
+#     .all-post:               called after 'all' target
+#     .help-pre:               called before 'help' target
+#     .help-post:              called after 'help' target
 #
-# For example, the rule 
+#  Targets beginning with '.' are not intended to be called on their own.
 #
-# mystring.o : mystring.c
-#	$(CC) -c $(CCFLAGS) mystring.c
+#  Main targets can be executed directly, and they are:
+#  
+#     build                    build a specific configuration
+#     clean                    remove built files from a configuration
+#     clobber                  remove all built files
+#     all                      build all configurations
+#     help                     print help mesage
+#  
+#  Targets .build-impl, .clean-impl, .clobber-impl, .all-impl, and
+#  .help-impl are implemented in nbproject/makefile-impl.mk.
 #
-# means that if mystring.o does not exist, or if mystring.c is older
-# than mystring.o, then execute "$(CC) -c $(CCFLAGS) mystring.c".
+#  Available make variables:
 #
-# The goal of make is to execute the minimum set of commands that
-# are necessary to build the target files. i.e., it does not rebuild
-# files that it expects need not be rebuilt because they have not changed.
+#     CND_BASEDIR                base directory for relative paths
+#     CND_DISTDIR                default top distribution directory (build artifacts)
+#     CND_BUILDDIR               default top build directory (object files, ...)
+#     CONF                       name of current configuration
+#     CND_PLATFORM_${CONF}       platform name (current configuration)
+#     CND_ARTIFACT_DIR_${CONF}   directory of build artifact (current configuration)
+#     CND_ARTIFACT_NAME_${CONF}  name of build artifact (current configuration)
+#     CND_ARTIFACT_PATH_${CONF}  path to build artifact (current configuration)
+#     CND_PACKAGE_DIR_${CONF}    directory of package (current configuration)
+#     CND_PACKAGE_NAME_${CONF}   name of package (current configuration)
+#     CND_PACKAGE_PATH_${CONF}   path to package (current configuration)
 #
-# Usually, the first target in a Makefile is called "all". 
-# The dependencies of "all" are the files (or make targets) that we want to build.
-#
-
-all: shell
-
-# Compile all .c files into .o files
-# % matches all (like * in a command)
-# $< is the source file (.c file)
-%.o : %.c
-	$(CC) -c $(CCFLAGS) $<
+# NOCDDL
 
 
+# Environment 
+MKDIR=mkdir
+CP=cp
+CCADMIN=CCadmin
 
-# Build shell if necessary
-shell: main.o
-	$(CC) -o shell main.o
+
+# build
+build: .build-post
+
+.build-pre:
+# Add your pre 'build' code here...
+
+.build-post: .build-impl
+# Add your post 'build' code here...
+
+
+# clean
+clean: .clean-post
+
+.clean-pre:
+# Add your pre 'clean' code here...
+
+.clean-post: .clean-impl
+# Add your post 'clean' code here...
+
+
+# clobber
+clobber: .clobber-post
+
+.clobber-pre:
+# Add your pre 'clobber' code here...
+
+.clobber-post: .clobber-impl
+# Add your post 'clobber' code here...
+
+
+# all
+all: .all-post
+
+.all-pre:
+# Add your pre 'all' code here...
+
+.all-post: .all-impl
+# Add your post 'all' code here...
+
+
+# build tests
+build-tests: .build-tests-post
+
+.build-tests-pre:
+# Add your pre 'build-tests' code here...
+
+.build-tests-post: .build-tests-impl
+# Add your post 'build-tests' code here...
+
+
+# run tests
+test: .test-post
+
+.test-pre: build-tests
+# Add your pre 'test' code here...
+
+.test-post: .test-impl
+# Add your post 'test' code here...
+
+
+# help
+help: .help-post
+
+.help-pre:
+# Add your pre 'help' code here...
+
+.help-post: .help-impl
+# Add your post 'help' code here...
 
 
 
-clean:
-	rm -f core *.o shell
+# include project implementation makefile
+include nbproject/Makefile-impl.mk
 
+# include project make variables
+include nbproject/Makefile-variables.mk
