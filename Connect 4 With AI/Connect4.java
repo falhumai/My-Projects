@@ -656,7 +656,6 @@ public class Connect4 {
                 for (int i = 0; i < waitingTime; ++i);
             } else {
                 // Computer - Hard mode.
-                String why = "";
                 boolean choiceDone = false;
                 int comuputerColumnChoice = -1;
                 System.out.println("Thinking...");
@@ -684,7 +683,6 @@ public class Connect4 {
                             if (winning(playerNum, tempBoard) == true) {
                                 ((ArrayList) board.get(tempRow)).set(tempColumn, playerNum.charAt(0));
                                 comuputerColumnChoice = tempColumn + 1;
-                                why = "Completing";
                                 valid = true;
                                 choiceDone = true;
                             }
@@ -721,7 +719,6 @@ public class Connect4 {
                             if (isGoingToWin(tempBoard, oppositePlayerNum) < isGoingToWin(tempBoard2, oppositePlayerNum)) {
                                 ((ArrayList) board.get(tempRow)).set(tempColumn, playerNum.charAt(0));
                                 comuputerColumnChoice = tempColumn + 1;
-                                why = "Blocking";
                                 valid = true;
                                 choiceDone = true;
                             }
@@ -772,7 +769,6 @@ public class Connect4 {
                                     System.out.println("\n\nPlayer" + playerNum + " is winning in the next move!!\n\n");
                                     ((ArrayList) board.get(tempRow)).set(tempColumn, playerNum.charAt(0));
                                     comuputerColumnChoice = tempColumn + 1;
-                                    why = "2 opinnings";
                                     valid = true;
                                     choiceDone = true;
                                 }
@@ -809,7 +805,6 @@ public class Connect4 {
                             if (isGoingToWin(tempBoard, oppositePlayerNum) == 0 && isGoingToWin(tempBoard, playerNum) != 0) {
                                 ((ArrayList) board.get(tempRow)).set(tempColumn, playerNum.charAt(0));
                                 comuputerColumnChoice = tempColumn + 1;
-                                why = "1 opinning";
                                 valid = true;
                                 choiceDone = true;
                             }
@@ -845,7 +840,6 @@ public class Connect4 {
                             if (isGoingToWin(tempBoard, oppositePlayerNum) == 0) {
                                 ((ArrayList) board.get(tempRow)).set(tempColumn, playerNum.charAt(0));
                                 comuputerColumnChoice = tempColumn + 1;
-                                why = "Safe move";
                                 valid = true;
                                 choiceDone = true;
                             }
@@ -875,7 +869,6 @@ public class Connect4 {
                         if (tempRow != -1) {
                             ((ArrayList) board.get(tempRow)).set(tempColumn, playerNum.charAt(0));
                             comuputerColumnChoice = tempColumn + 1;
-                            why = "Random";
                             valid = true;
                             choiceDone = true;
                         }
@@ -886,7 +879,7 @@ public class Connect4 {
                     }
                 }
 
-                System.out.println("Player" + playerNum + " chose: " + comuputerColumnChoice + " (" + why + ")");
+                System.out.println("Player" + playerNum + " chose: " + comuputerColumnChoice);
 //                System.out.println("Player" + playerNum + " chose: " + comuputerColumnChoice);
                 for (int i = 0; i < waitingTime; ++i);
             }
