@@ -6,7 +6,8 @@ import java.util.*;
 public class Connect4 {
 
     public static Scanner input = new Scanner(System.in);
-
+    public static int waitingTime = 90000;
+    
     public static ArrayList stringTokinzer(String inp) {
         ArrayList words = new ArrayList();
         for (int i = 0; i < inp.length(); ++i) {
@@ -27,9 +28,10 @@ public class Connect4 {
     public static int isGoingToWin(ArrayList board, String playerNum) {
         boolean choiceDone = false;
         int winCount = 0;
-        int waitingTime = 90000000;
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -48,7 +50,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = board.size() - 1; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -65,7 +69,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -84,7 +90,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = board.size() - 1; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -101,7 +109,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -120,7 +130,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = board.size() - 1; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -137,7 +149,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -156,7 +170,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = board.size() - 1; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -173,7 +189,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -192,7 +210,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = board.size() - 4; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -210,7 +230,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -229,7 +251,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -248,7 +272,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -267,7 +293,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = ((ArrayList) board.get(i)).size() - 1; j >= 0; --j) {
@@ -285,7 +313,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = board.size() - 4; i < board.size(); ++i) {
                 for (int j = ((ArrayList) board.get(i)).size() - 1; j >= 0; --j) {
@@ -302,7 +332,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = ((ArrayList) board.get(i)).size() - 1; j >= 0; --j) {
@@ -320,7 +352,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = ((ArrayList) board.get(i)).size() - 1; j >= 0; --j) {
@@ -338,7 +372,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = ((ArrayList) board.get(i)).size() - 1; j >= 0; --j) {
@@ -356,7 +392,9 @@ public class Connect4 {
             }
         }
 
-        for (int i = 0; i < waitingTime; ++i);
+        for (int i = 0; i < waitingTime; ++i) {
+            System.out.print("");
+        }
         if (choiceDone == false) {
             for (int i = 0; i < board.size(); ++i) {
                 for (int j = 0; j < ((ArrayList) board.get(i)).size(); ++j) {
@@ -538,7 +576,6 @@ public class Connect4 {
      *      2 == The game ends in a tie.
      */
     public static int responseAndWinningStatus(String player, String diff, String playerNum, ArrayList board) {
-        int waitingTime = 90000000;
 
         String oppositePlayerNum = "";
         if (playerNum.equals("1")) {
@@ -555,7 +592,9 @@ public class Connect4 {
                 System.out.println("Thinking...");
 
                 // Completing.
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
                 if (choiceDone == false) {
                     Random rand = new Random();
                     ArrayList columnChoices = new ArrayList();
@@ -589,7 +628,9 @@ public class Connect4 {
                 }
 
                 // Blocking.
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
                 if (choiceDone == false) {
                     Random rand = new Random();
                     ArrayList columnChoices = new ArrayList();
@@ -625,7 +666,9 @@ public class Connect4 {
                 }
 
                 // Random.
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
                 if (choiceDone == false) {
                     Random rand = new Random();
                     ArrayList columnChoices = new ArrayList();
@@ -653,7 +696,9 @@ public class Connect4 {
                 }
 
                 System.out.println("Player" + playerNum + " chose: " + comuputerColumnChoice);
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
             } else {
                 // Computer - Hard mode.
                 boolean choiceDone = false;
@@ -661,7 +706,9 @@ public class Connect4 {
                 System.out.println("Thinking...");
 
                 // Completing.
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
                 if (choiceDone == false) {
                     Random rand = new Random();
                     ArrayList columnChoices = new ArrayList();
@@ -695,7 +742,9 @@ public class Connect4 {
                 }
 
                 // Blocking.
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
                 if (choiceDone == false) {
                     Random rand = new Random();
                     ArrayList columnChoices = new ArrayList();
@@ -732,7 +781,9 @@ public class Connect4 {
 
                 // Looking for a chance to get to more than one openning to fill.
                 // I.e. opennings that cannot be all blocked on the next move.
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
                 if (choiceDone == false) {
                     Random rand = new Random();
                     ArrayList columnChoices = new ArrayList();
@@ -783,7 +834,9 @@ public class Connect4 {
 
                 // Completing three (without giving a chance for the other player
                 // to have three).
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
                 if (choiceDone == false) {
                     Random rand = new Random();
                     ArrayList columnChoices = new ArrayList();
@@ -818,7 +871,9 @@ public class Connect4 {
 
                 // Not allowing the other player to have the next move a winning
                 // one.
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
                 if (choiceDone == false) {
                     Random rand = new Random();
                     ArrayList columnChoices = new ArrayList();
@@ -852,7 +907,9 @@ public class Connect4 {
                 }
 
                 // Random.
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
                 if (choiceDone == false) {
                     Random rand = new Random();
                     ArrayList columnChoices = new ArrayList();
@@ -880,8 +937,9 @@ public class Connect4 {
                 }
 
                 System.out.println("Player" + playerNum + " chose: " + comuputerColumnChoice);
-//                System.out.println("Player" + playerNum + " chose: " + comuputerColumnChoice);
-                for (int i = 0; i < waitingTime; ++i);
+                for (int i = 0; i < waitingTime; ++i) {
+                    System.out.print("");
+                }
             }
         } else {
             // Human mode.
